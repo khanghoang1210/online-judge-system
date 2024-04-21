@@ -1,0 +1,31 @@
+version: '3.4'
+
+services:
+  judge.system.core:
+    image: ${DOCKER_REGISTRY-}judgesystemcore
+    build:
+      context: .
+      dockerfile: judge.system.core/Dockerfile
+  gcc_compiler:
+    container_name: gcc_compiler
+    image: gcc:latest
+    volumes:
+        - ./code:/code
+
+  python_interpreter:
+    container_name: python_interpreter
+    image: python:latest
+    volumes:
+        - ./code:/code
+
+  java_compiler:
+    container_name: java_compiler
+    image: openjdk:latest
+    volumes:
+        - ./code:/code
+
+  csharp_compiler:
+    container_name: csharp_compiler
+    image: mcr.microsoft.com/dotnet/sdk:latest
+    volumes:
+        - ./code:/code
