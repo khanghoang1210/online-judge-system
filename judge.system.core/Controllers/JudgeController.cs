@@ -10,7 +10,7 @@ namespace judge.system.core.Controllers
         [HttpPost]
         public async Task<ActionResult> Judge(string code)
         {
-            var res = JudgeService.JudgeC(code);
+            var res = JudgeService.JudgePython(code);
 
             return Ok(res);
         }

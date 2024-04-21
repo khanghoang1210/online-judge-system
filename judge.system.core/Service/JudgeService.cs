@@ -4,66 +4,66 @@ namespace judge.system.core.Service
 {
     public class JudgeService
     {
-        public static string JudgeC(string code)
-        {
+        //public static string JudgeC(string code)
+        //{
 
-            string outputPath = "output.txt";
-            string errorPath = "error.txt";
+        //    string outputPath = "output.txt";
+        //    string errorPath = "error.txt";
 
-            string fullCode = $@"
-                                #include <stdio.h>
+        //    string fullCode = $@"
+        //                        #include <stdio.h>
 
-                                int main() {{
-                                {code}
-                                    return 0;
-                                }}
-                                ";
+        //                        int main() {{
+        //                        {code}
+        //                            return 0;
+        //                        }}
+        //                        ";
 
 
-            ProcessStartInfo compileInfo = new ProcessStartInfo
-            {
-                FileName = "gcc",
-                Arguments = "-x c -o tempCode.exe -",
-                RedirectStandardInput = true,
-                RedirectStandardError = true
-            };
+        //    ProcessStartInfo compileInfo = new ProcessStartInfo
+        //    {
+        //        FileName = "gcc",
+        //        Arguments = "-x c -o tempCode.exe -",
+        //        RedirectStandardInput = true,
+        //        RedirectStandardError = true
+        //    };
 
-            using (Process compileProcess = Process.Start(compileInfo))
-            {
+        //    using (Process compileProcess = Process.Start(compileInfo))
+        //    {
 
-                compileProcess.StandardInput.Write(fullCode);
-                compileProcess.StandardInput.Close();
+        //        compileProcess.StandardInput.Write(fullCode);
+        //        compileProcess.StandardInput.Close();
 
-                compileProcess.WaitForExit();
+        //        compileProcess.WaitForExit();
 
-                if (compileProcess.ExitCode != 0)
-                {
-                    string error = compileProcess.StandardError.ReadToEnd();
-                    return $"Compilation Error:\n{error}";
-                }
-            }
+        //        if (compileProcess.ExitCode != 0)
+        //        {
+        //            string error = compileProcess.StandardError.ReadToEnd();
+        //            return $"Compilation Error:\n{error}";
+        //        }
+        //    }
 
-            ProcessStartInfo executeInfo = new ProcessStartInfo
-            {
-                FileName = "./tempCode.exe",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            };
+        //    ProcessStartInfo executeInfo = new ProcessStartInfo
+        //    {
+        //        FileName = "./tempCode.exe",
+        //        RedirectStandardOutput = true,
+        //        RedirectStandardError = true
+        //    };
 
-            using (Process executeProcess = Process.Start(executeInfo))
-            {
-                string output = executeProcess.StandardOutput.ReadToEnd();
-                string error = executeProcess.StandardError.ReadToEnd();
+        //    using (Process executeProcess = Process.Start(executeInfo))
+        //    {
+        //        string output = executeProcess.StandardOutput.ReadToEnd();
+        //        string error = executeProcess.StandardError.ReadToEnd();
 
-                if (!string.IsNullOrEmpty(error))
-                {
-                    return $"Runtime Error:\n{error}";
-                }
+        //        if (!string.IsNullOrEmpty(error))
+        //        {
+        //            return $"Runtime Error:\n{error}";
+        //        }
 
-                return output;
+        //        return output;
 
-            }
-        }
+        //    }
+        //}
         public static string JudgePython(string code)
         {
             // Define the path for the output file

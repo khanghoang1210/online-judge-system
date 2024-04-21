@@ -1,5 +1,9 @@
-var builder = WebApplication.CreateBuilder(args);
+using judge.system.core.Database;
+using judge.system.core.Service.Impls;
+using judge.system.core.Service.Interface;
+using Microsoft.EntityFrameworkCore;
 
+var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -7,7 +11,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddDbContext<Context>(
+    opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
