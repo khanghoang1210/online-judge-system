@@ -7,5 +7,17 @@ namespace judge.system.core.Database
     {
         public Context(DbContextOptions options) : base(options) { }
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Submission> Submissions { get; set; }
+        public DbSet<Problem> Problems { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder
+            .Entity<Problem>()
+            .Property(p => p.TestCases)
+            .HasColumnType("jsonb")
+            .IsRequired();
+
+        }
     }
 }
