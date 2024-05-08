@@ -1,4 +1,4 @@
-﻿namespace judge.system.core.DTOs.Requests.Authentication
+﻿namespace judge.system.core.DTOs.Requests.Account
 {
     public class LoginReq
     {
