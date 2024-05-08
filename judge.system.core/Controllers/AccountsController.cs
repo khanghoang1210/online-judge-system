@@ -14,21 +14,27 @@ namespace judge.system.core.Controllers
         {
             _accountService = accountService;
         }
-        [HttpPost("Create")]
+        [HttpPost("[action]")]
         public async Task<ActionResult> Create(CreateAccountReq req)
         {
             var res = await _accountService.Create(req);
             return Ok(res);
         }
 
-        [HttpGet("GetAll")]
+        [HttpPost("[action]")]
+        public async Task<ActionResult> Login(LoginReq req)
+        {
+            var res = await _accountService.Login(req);
+            return Ok(res);
+        }
+        [HttpGet("[action]")]
         public async Task<IActionResult> GetAll()
         {
             var res = await _accountService.ReadAll();
             return Ok(res);
         }
 
-        [HttpPut("Update")]
+        [HttpPut("[action]")]
         public async Task<ActionResult> Update(UpdateAccountReq req, [FromQuery] string userName)
         {
             var res = await _accountService.Update(req, userName);
