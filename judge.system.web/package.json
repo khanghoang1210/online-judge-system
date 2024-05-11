@@ -2,6 +2,7 @@
   "name": "judge.system.web",
   "version": "0.1.0",
   "private": true,
+  "proxy":"https://localhost:7004/",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

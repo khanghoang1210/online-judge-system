@@ -1,25 +1,59 @@
 import { authModalState } from '@/atoms/authModalAtom';
-import React from 'react';
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 
 type SignupProps = {
     
 };
 
+const API_URL = 'https://localhost:7004/api/Accounts/Create';
 const Signup:React.FC<SignupProps> = () => {
     
     const setAuthModalState = useSetRecoilState(authModalState);
     const handleClick = ()=>{
         setAuthModalState((prev)=>({...prev, type:'login'}))
     }
-    return <form className='space-y-6 px-6 pb-4' >
+
+    const  [inputs, setInputs] = useState({email:"",userName:"",fullName:"",password:""})
+    const router = useRouter();
+    const handleChangeInput = (e:React.ChangeEvent<HTMLInputElement>)=>{
+        setInputs((prev) => ({...prev,[e.target.name]:e.target.value}));
+    }
+    const handleRegister = async (e:React.FormEvent<HTMLFormElement>)=>{
+        e.preventDefault();
+        //if(!inputs.email || !inputs.dislayName || !inputs.password) return alert("Please fill all field");
+        console.log(inputs)
+        try{
+            const data = {userName: inputs.userName, password: inputs.password, email:inputs.email, fullName:inputs.fullName}
+            const res = await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify(data),
+                mode: "cors",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+              }) ;
+            if(!res.ok) throw Error(res.statusText);
+            const json = await res.json()
+            console.log(json)
+            router.push("/");
+        }
+        catch(error:any){
+            alert(error.message)
+        }
+      
+    }
+    console.log(inputs)
+    return <form className='space-y-4 px-6 pb-4' onSubmit={handleRegister}>
     <h3 className='text-xl font-medium text-white'>Register to LeetClone</h3>
     <div>
         <label htmlFor='email' className='text-sm font-medium block mb-2 text-gray-300'>
             Email
         </label>
         <input
-        
+            onChange={handleChangeInput}
             type='email'
             name='email'
             id='email'
@@ -32,13 +66,29 @@ bg-gray-600 border-gray-500 placeholder-gray-400 text-white
     </div>
     <div>
         <label htmlFor='displayName' className='text-sm font-medium block mb-2 text-gray-300'>
-            Display Name
+            User Name
         </label>
         <input
-    
-            type='displayName'
-            name='displayName'
-            id='displayName'
+            onChange={handleChangeInput}
+            type='userName'
+            name='userName'
+            id='userName'
+            className='
+border-2 outline-none sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
+bg-gray-600 border-gray-500 placeholder-gray-400 text-white
+'
+            placeholder='John Doe'
+        />
+    </div>
+    <div>
+        <label htmlFor='displayName' className='text-sm font-medium block mb-2 text-gray-300'>
+            Full Name
+        </label>
+        <input
+            onChange={handleChangeInput}
+            type='fullName'
+            name='fullName'
+            id='fullName'
             className='
 border-2 outline-none sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
 bg-gray-600 border-gray-500 placeholder-gray-400 text-white
@@ -51,7 +101,7 @@ bg-gray-600 border-gray-500 placeholder-gray-400 text-white
             Password
         </label>
         <input
-        
+            onChange={handleChangeInput}
             type='password'
             name='password'
             id='password'
