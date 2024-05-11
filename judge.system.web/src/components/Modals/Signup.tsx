@@ -1,6 +1,7 @@
 import { authModalState } from '@/atoms/authModalAtom';
+import { error } from 'console';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 
 type SignupProps = {
@@ -22,7 +23,7 @@ const Signup:React.FC<SignupProps> = () => {
     }
     const handleRegister = async (e:React.FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
-        //if(!inputs.email || !inputs.dislayName || !inputs.password) return alert("Please fill all field");
+        if(!inputs.email || !inputs.userName ||!inputs.fullName || !inputs.password) return alert("Please fill all field");
         console.log(inputs)
         try{
             const data = {userName: inputs.userName, password: inputs.password, email:inputs.email, fullName:inputs.fullName}
@@ -36,15 +37,16 @@ const Signup:React.FC<SignupProps> = () => {
                 },
               }) ;
             if(!res.ok) throw Error(res.statusText);
-            const json = await res.json()
-            console.log(json)
-            router.push("/");
+            const result = await res.json();
+            if(result.StatusCode == 200) router.push("/auth");
+            alert(result.message)
+
         }
         catch(error:any){
             alert(error.message)
         }
       
-    }
+    };
     console.log(inputs)
     return <form className='space-y-4 px-6 pb-4' onSubmit={handleRegister}>
     <h3 className='text-xl font-medium text-white'>Register to LeetClone</h3>

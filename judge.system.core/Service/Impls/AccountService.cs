@@ -29,7 +29,7 @@ namespace judge.system.core.Service.Impls
                         return new APIResponse<string>
                         {
                             StatusCode = 200,
-                            Data = "User name already exists"
+                            Message = "User name already exists"
                         };
                     }
                 }
