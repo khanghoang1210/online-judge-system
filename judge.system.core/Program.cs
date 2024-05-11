@@ -10,12 +10,21 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowOrigin",
+        builder => builder.WithOrigins("http://localhost:3000")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddDbContext<Context>(
     opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddAutoMapper(typeof(Program));
+
 
 var app = builder.Build();
+app.UseCors("AllowOrigin");
 
 
 // Configure the HTTP request pipeline.

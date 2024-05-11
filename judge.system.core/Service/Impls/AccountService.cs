@@ -1,4 +1,5 @@
-﻿using judge.system.core.Database;
+﻿using AutoMapper;
+using judge.system.core.Database;
 using judge.system.core.DTOs.Requests.Account;
 using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Account;
@@ -10,21 +11,31 @@ namespace judge.system.core.Service.Impls
     public class AccountService : IAccountService
     {
         private readonly Context _context;
-        public AccountService(Context context)
+        private readonly IMapper _mapper;
+        public AccountService(Context context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         public async Task<APIResponse<string>> Create(CreateAccountReq req)
         {
             try
             {
-                var newAcc = new Account
+                var users = ReadAll();
+                foreach (var user in users.Result.Data)
                 {
-                    UserName = req.UserName,
-                    Password = req.Password,
-                    Email = req.Email,
-                    FullName = req.FullName,
-                };
+                    if (user.UserName == req.UserName)
+                    {
+                        return new APIResponse<string>
+                        {
+                            StatusCode = 200,
+                            Message = "User name already exists"
+                        };
+                    }
+                }
+                var passwordHash = BCrypt.Net.BCrypt.HashPassword(req.Password);
+                var newAcc = _mapper.Map<Account>(req);
+                newAcc.Password = passwordHash;
                 _context.Accounts.Add(newAcc);
 
                 await _context.SaveChangesAsync();
@@ -42,6 +53,34 @@ namespace judge.system.core.Service.Impls
                     Message = ex.Message,
                 };
             }
+        }
+
+        public async Task<APIResponse<LoginRes>> Login(LoginReq req)
+        {
+            var user = _context.Accounts.FirstOrDefault(x => x.UserName == req.UserName);
+            if (user is null)
+            {
+                return new APIResponse<LoginRes>
+                {
+                    StatusCode = 200,
+                    Message = $"User {req.UserName} does not exists",
+                };
+            }
+            bool isValidPassword = BCrypt.Net.BCrypt.Verify(req.Password, user.Password);
+
+            if (!isValidPassword)
+            {
+                return new APIResponse<LoginRes>
+                {
+                    StatusCode = 401,
+                    Message = $"Password is wrong",
+                };
+            }
+            return new APIResponse<LoginRes>
+            {
+                StatusCode = 200,
+                Message = $"Success",
+            };
         }
 
         public async Task<APIResponse<List<ReadAccountsRes>>> ReadAll()
@@ -68,6 +107,7 @@ namespace judge.system.core.Service.Impls
 
         public async Task<APIResponse<string>> Update(UpdateAccountReq req, string userName)
         {
+            var a = 1;
             var acc = _context.Accounts.FirstOrDefault(x => x.UserName == userName);
             acc.FullName = req.FullName;
             _context.Accounts.Update(acc);

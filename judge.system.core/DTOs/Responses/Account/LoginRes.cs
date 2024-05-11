@@ -1,4 +1,4 @@
-﻿namespace judge.system.core.DTOs.Responses.Authentication
+﻿namespace judge.system.core.DTOs.Responses.Account
 {
     public class LoginRes
     {

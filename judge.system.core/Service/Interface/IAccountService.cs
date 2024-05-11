@@ -9,5 +9,6 @@ namespace judge.system.core.Service.Interface
         Task<APIResponse<string>> Create(CreateAccountReq req);
         Task<APIResponse<List<ReadAccountsRes>>> ReadAll();
         Task<APIResponse<string>> Update(UpdateAccountReq req, string userName);
+        Task<APIResponse<LoginRes>> Login(LoginReq req);
     }
 }

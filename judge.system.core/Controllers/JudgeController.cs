@@ -11,7 +11,6 @@ namespace judge.system.core.Controllers
         public async Task<ActionResult> Judge(string code)
         {
             var res = JudgeService.JudgePython(code);
-
             return Ok(res);
         }
 
