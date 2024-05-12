@@ -1,7 +1,10 @@
 using judge.system.core.Database;
 using judge.system.core.Service.Impls;
 using judge.system.core.Service.Interface;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -21,6 +24,39 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddDbContext<Context>(
     opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddAutoMapper(typeof(Program));
+
+var secretKey = builder.Configuration["AppSettings:SecretKey"];
+var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opt =>
+    {
+        opt.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+            ValidateIssuer = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(secretKeyBytes),
+            ClockSkew = TimeSpan.Zero
+        };
+        opt.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+
+                string authorizationHeader = context.Request.Headers["Authorization"];
+                if (!string.IsNullOrEmpty(authorizationHeader))
+                {
+                    string token = authorizationHeader.Substring("Bearer ".Length).Trim();
+                    context.Token = token;
+                }
+
+
+                return Task.CompletedTask;
+            }
+        };
+    });
 
 
 var app = builder.Build();
