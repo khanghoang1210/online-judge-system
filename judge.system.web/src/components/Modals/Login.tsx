@@ -1,4 +1,5 @@
 import { authModalState } from '@/atoms/authModalAtom';
+import { Cookie } from 'next/font/google';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { useSetRecoilState } from 'recoil';
@@ -6,7 +7,6 @@ import { useSetRecoilState } from 'recoil';
 type LoginProps = {
     
 };
-
 const API_URL = 'https://localhost:7004/api/Accounts/Login';
 const Login:React.FC<LoginProps> = () => {
 
@@ -34,10 +34,15 @@ const Login:React.FC<LoginProps> = () => {
                     'Accept': 'application/json, text/plain',
                     'Content-Type': 'application/json;charset=UTF-8'
                 },
-              }) ;
+              });
             if(!res.ok) throw Error(res.statusText);
             const result = await res.json();
-            if(result.statusCode == 200)  router.push("/");
+ 
+            if(result.statusCode == 200) {
+                const token = result.data.accessToken;
+                document.cookie = `token=${token}`
+
+            }
             
            
             
