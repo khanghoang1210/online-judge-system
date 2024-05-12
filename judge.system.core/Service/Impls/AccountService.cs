@@ -3,6 +3,7 @@ using judge.system.core.Database;
 using judge.system.core.DTOs.Requests.Account;
 using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Account;
+using judge.system.core.Helper;
 using judge.system.core.Models;
 using judge.system.core.Service.Interface;
 
@@ -12,10 +13,12 @@ namespace judge.system.core.Service.Impls
     {
         private readonly Context _context;
         private readonly IMapper _mapper;
-        public AccountService(Context context, IMapper mapper)
+        private readonly IConfiguration _configuration;
+        public AccountService(Context context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
+            _configuration = configuration;
         }
         public async Task<APIResponse<string>> Create(CreateAccountReq req)
         {
@@ -67,6 +70,7 @@ namespace judge.system.core.Service.Impls
                 };
             }
             bool isValidPassword = BCrypt.Net.BCrypt.Verify(req.Password, user.Password);
+            var token = await TokenManager.GenerateToken(user, _configuration);
 
             if (!isValidPassword)
             {
@@ -80,6 +84,7 @@ namespace judge.system.core.Service.Impls
             {
                 StatusCode = 200,
                 Message = $"Success",
+                Data = token
             };
         }
 

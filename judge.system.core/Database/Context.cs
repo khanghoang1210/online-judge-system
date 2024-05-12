@@ -9,6 +9,7 @@ namespace judge.system.core.Database
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Submission> Submissions { get; set; }
         public DbSet<Problem> Problems { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
