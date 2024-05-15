@@ -3,6 +3,7 @@ import { Cookie } from 'next/font/google';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { useSetRecoilState } from 'recoil';
+import { CookiesProvider, useCookies } from 'react-cookie'
 
 type LoginProps = {
     
@@ -20,6 +21,8 @@ const Login:React.FC<LoginProps> = () => {
         setInputs((prev)=>({...prev,[e.target.name]:e.target.value}));
 
     }
+
+    const [cookies, setCookie] = useCookies(['token'])
 
     const handleLogin = async(e:React.FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
@@ -40,7 +43,7 @@ const Login:React.FC<LoginProps> = () => {
  
             if(result.statusCode == 200) {
                 const token = result.data.accessToken;
-                document.cookie = `token=${token}`
+                setCookie('token', token, { path: '/' })
 
             }
             
