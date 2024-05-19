@@ -45,7 +45,7 @@ namespace judge.system.core.Service.Impls
                 return new APIResponse<string>
                 {
                     StatusCode = 200,
-                    Data = "Success"
+                    Message = "Success"
                 };
             }
             catch (Exception ex)
