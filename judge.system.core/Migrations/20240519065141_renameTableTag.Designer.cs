@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using judge.system.core.Database;
@@ -12,9 +13,11 @@ using judge.system.core.Database;
 namespace judge.system.core.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20240519065141_renameTableTag")]
+    partial class renameTableTag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,7 +116,7 @@ namespace judge.system.core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("refresh_token");
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("judge.system.core.Models.Submission", b =>
