@@ -1,5 +1,8 @@
-﻿namespace judge.system.core.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace judge.system.core.Models
 {
+    [Table("refresh_token")]
     public class RefreshToken
     {
         public Guid Id { get; set; }

@@ -21,10 +21,14 @@ builder.Services.AddCors(options =>
                           .AllowAnyMethod());
 });
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ILeetCodeService, LeetCodeService>();
 builder.Services.AddDbContext<Context>(
     opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddAutoMapper(typeof(Program));
 
+//Set 5 min as the lifetime for the HttpMessageHandler objects in the pool used for the Catalog Typed Client
+builder.Services.AddHttpClient<ILeetCodeService, LeetCodeService>()
+    .SetHandlerLifetime(TimeSpan.FromMinutes(5));
 var secretKey = builder.Configuration["AppSettings:SecretKey"];
 var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
