@@ -17,7 +17,7 @@ namespace judge.system.core.Service.Impls
             _context = context;
         }
 
-        public async Task<APIResponse<List<GetProblemRes>>> GetAllProblems()
+        public async Task<APIResponse<List<GetProblemRes>>> GetAll()
         {
             var problems = _context.Problems.ToList();
             List<GetProblemRes> res = new List<GetProblemRes>();
@@ -43,7 +43,7 @@ namespace judge.system.core.Service.Impls
             };
         }
 
-        public async Task<APIResponse<GetProblemRes>> GetProblemById(int inputId)
+        public async Task<APIResponse<GetProblemRes>> GetById(int inputId)
         {
             var problem = await _context.Problems.FindAsync(inputId);
 
@@ -71,6 +71,16 @@ namespace judge.system.core.Service.Impls
                 Message = "Success",
                 Data = item
             };
+        }
+
+        public Task<APIResponse<Problem>> GetById(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<APIResponse<List<Problem>>> IProblemService.ReadAll()
+        {
+            throw new NotImplementedException();
         }
     }
 }
