@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using judge.system.core.Models;
+using System.Collections.Generic;
 
 namespace judge.system.core.DTOs.Responses.Problem
 {
@@ -9,5 +10,6 @@ namespace judge.system.core.DTOs.Responses.Problem
         public string Description { get; set; }
         public float TimeLimit { get; set; }
         public int MemoryLimit { get; set; }
+        public List<TestCase> TestCases { get; set; }
     }
 }

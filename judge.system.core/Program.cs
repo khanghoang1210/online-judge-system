@@ -22,6 +22,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ILeetCodeService, LeetCodeService>();
+builder.Services.AddScoped<IProblemService, ProblemService>();
 builder.Services.AddDbContext<Context>(
     opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddAutoMapper(typeof(Program));
