@@ -3,6 +3,7 @@ using judge.system.core.Database;
 using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Problem;
 using judge.system.core.Service.Interface;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace judge.system.core.Service.Impls
@@ -19,7 +20,7 @@ namespace judge.system.core.Service.Impls
 
         public async Task<APIResponse<List<GetProblemRes>>> GetAll()
         {
-            var problems = _context.Problems.ToList();
+            var problems = await _context.Problems.ToListAsync();
             List<GetProblemRes> res = new List<GetProblemRes>();
 
             foreach (var item in problems)
