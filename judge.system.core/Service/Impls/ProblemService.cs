@@ -1,10 +1,8 @@
-﻿using judge.system.core.Database;
-using judge.system.core.DTOs.Requests.Problem;
+﻿using AutoMapper;
+using judge.system.core.Database;
 using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Problem;
-using judge.system.core.Models;
 using judge.system.core.Service.Interface;
-using System.Reflection;
 
 
 namespace judge.system.core.Service.Impls
@@ -12,9 +10,11 @@ namespace judge.system.core.Service.Impls
     public class ProblemService : IProblemService
     {
         private readonly Context _context;
-        public ProblemService(Context context) 
+        private readonly IMapper _mapper;
+        public ProblemService(Context context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<APIResponse<List<GetProblemRes>>> GetAll()
@@ -22,17 +22,16 @@ namespace judge.system.core.Service.Impls
             var problems = _context.Problems.ToList();
             List<GetProblemRes> res = new List<GetProblemRes>();
 
-            foreach (var problem in problems)
+            foreach (var item in problems)
             {
-                GetProblemRes item = new GetProblemRes();
-
-                item.ProblemId = problem.ProblemId;
-                item.Title = problem.Title;
-                item.Description = problem.Description;
-                item.TimeLimit = problem.TimeLimit;
-                item.MemoryLimit = problem.MemoryLimit;
-
-                res.Add(item);
+                //GetProblemRes problem = new GetProblemRes();
+                //problem.ProblemId = item.ProblemId;
+                //problem.Title = item.Title;
+                //problem.TitleSlug = item.TitleSlug;
+                //problem.Difficulty = item.Difficulty;
+                //problem.TagId = item.TagId;
+                var problem = _mapper.Map<GetProblemRes>(item);
+                res.Add(problem);
             }
 
             return new APIResponse<List<GetProblemRes>>
@@ -43,9 +42,9 @@ namespace judge.system.core.Service.Impls
             };
         }
 
-        public async Task<APIResponse<GetProblemRes>> GetById(int inputId)
+        public async Task<APIResponse<GetProblemRes>> GetById(int problemId)
         {
-            var problem = await _context.Problems.FindAsync(inputId);
+            var problem = await _context.Problems.FindAsync(problemId);
 
             if (problem == null)
             {
@@ -56,14 +55,16 @@ namespace judge.system.core.Service.Impls
                 };
             }
 
-            var item = new GetProblemRes()
-            {
-                ProblemId = problem.ProblemId,
-                Title = problem.Title,
-                Description = problem.Description,
-                TimeLimit = problem.TimeLimit,
-                MemoryLimit = problem.MemoryLimit
-            };
+            var item = _mapper.Map<GetProblemRes>(problem);
+
+            //var item = new GetProblemRes()
+            //{
+            //    ProblemId = problem.ProblemId,
+            //    Title = problem.Title,
+            //    Description = problem.Description,
+            //    TimeLimit = problem.TimeLimit,
+            //    MemoryLimit = problem.MemoryLimit
+            //};
 
             return new APIResponse<GetProblemRes>
             {
@@ -71,16 +72,6 @@ namespace judge.system.core.Service.Impls
                 Message = "Success",
                 Data = item
             };
-        }
-
-        public Task<APIResponse<List<Problem>>> ReadAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<APIResponse<Problem>> IProblemService.GetById(int id)
-        {
-            throw new NotImplementedException();
         }
     }
 }
