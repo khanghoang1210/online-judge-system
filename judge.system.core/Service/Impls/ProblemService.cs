@@ -73,12 +73,12 @@ namespace judge.system.core.Service.Impls
             };
         }
 
-        public Task<APIResponse<Problem>> GetById(string id)
+        public Task<APIResponse<List<Problem>>> ReadAll()
         {
             throw new NotImplementedException();
         }
 
-        Task<APIResponse<List<Problem>>> IProblemService.ReadAll()
+        Task<APIResponse<Problem>> IProblemService.GetById(int id)
         {
             throw new NotImplementedException();
         }

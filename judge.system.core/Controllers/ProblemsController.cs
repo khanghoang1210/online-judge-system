@@ -16,7 +16,7 @@ namespace judge.system.core.Controllers
         }
 
         [HttpGet("GetById")]
-        public async Task<IActionResult> GetById(GetAllProblemReq req)
+        public async Task<IActionResult> GetById(int req)
         {
             var res = await _problemService.GetById(req);
             return Ok(res);
