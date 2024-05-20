@@ -18,7 +18,6 @@ namespace judge.system.core.Controllers
         /// Get problem in Leetcode and insert into DB
         /// Default 100 problems
         /// </summary>
-        /// <param name="obj"></param>
         /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Create()
