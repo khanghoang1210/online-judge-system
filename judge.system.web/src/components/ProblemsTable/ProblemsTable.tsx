@@ -26,8 +26,7 @@ const ProblemsTable: React.FC<ProblemsTableProps> = () => {
             mode: "cors",
             headers: {
                 'Accept': 'application/json, text/plain',
-                'Content-Type': 'application/json;charset=UTF-8',
-                'Authorization': `Bearer ${token.token}`
+                'Content-Type': 'application/json;charset=UTF-8'
             },
         })
         .then(res => {
