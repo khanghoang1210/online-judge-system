@@ -1,11 +1,13 @@
+import { DBProblem } from '@/utils/types/problem';
 import Link from 'next/link';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { BsCheckCircle } from 'react-icons/bs';
 
 type Problem = {
-    id: string;
+    problemId: string;
     title: string;
+    titleSlug: string;
     difficulty: string;
     tagId: string
     //category: string;
@@ -46,6 +48,7 @@ const ProblemsTable: React.FC<ProblemsTableProps> = () => {
     }, []);
 
     return (
+        <>
         <tbody className='text-white'>
             {problemList.map((doc, idx) => {
                 const difficultyColor =
@@ -55,13 +58,13 @@ const ProblemsTable: React.FC<ProblemsTableProps> = () => {
                         ? "text-dark-yellow"
                         : "text-dark-pink";
                 return (
-                    <tr className={`${idx % 2 === 1 ? 'bg-dark-layer-1' : ''}`} key={doc.id}>
+                    <tr className={`${idx % 2 === 1 ? 'bg-dark-layer-1' : ''}`} key={doc.problemId}>
                         <th className='px-2 py-4 font-medium whitespace-nowrap text-dark-green-s'>
                             <BsCheckCircle fontSize={"18"} width='18' />
                         </th>
                         <td className='px-6 py-4'>
                             {/* <Link href={`/problems/${doc.id}`}> */}
-                                <a className="hover:text-blue-600 cursor-pointer">{doc.title}</a>
+                                <a href={`/problems/${doc.titleSlug}`} className="hover:text-blue-600 cursor-pointer">{doc.title}</a>
                             {/* </Link> */}
                         </td>
                         <td className={`px-6 py-4 ${difficultyColor}`}>
@@ -73,7 +76,51 @@ const ProblemsTable: React.FC<ProblemsTableProps> = () => {
                 );
             })}
         </tbody>
+        </>
     );
 };
 
 export default ProblemsTable;
+
+// function useGetProblems(setLoadingProblems: React.Dispatch<React.SetStateAction<boolean>>) {
+// 	const [problems, setProblems] = useState<DBProblem[]>([]);
+
+// 	useEffect(() => {
+// 		const getProblems = async () => {
+// 			// fetching data logic
+// 			// setLoadingProblems(true);
+// 			// //const q = query(collection("problems"), orderBy("order", "asc"));
+// 			// const querySnapshot = await getDocs(q);
+// 			// const tmp: DBProblem[] = [];
+// 			// querySnapshot.forEach((doc) => {
+// 			// 	tmp.push({ id: doc.id, ...doc.data() } as DBProblem);
+// 			// });
+// 			// setProblems(tmp);
+// 			// setLoadingProblems(false);
+// 		};
+
+// 		getProblems();
+// 	}, [setLoadingProblems]);
+// 	return problems;
+// }
+
+// function useGetSolvedProblems() {
+// 	const [solvedProblems, setSolvedProblems] = useState<string[]>([]);
+	
+
+// 	useEffect(() => {
+// 		const getSolvedProblems = async () => {
+// 			//const userRef = doc(firestore, "users", user!.uid);
+// 			// const userDoc = await getDoc(userRef);
+
+// 			// if (userDoc.exists()) {
+// 			// 	setSolvedProblems(userDoc.data().solvedProblems);
+// 			// }
+// 		};
+
+// 		// if (user) getSolvedProblems();
+// 		// if (!user) setSolvedProblems([]);
+// 	}, []);
+
+// 	return solvedProblems;
+// }
