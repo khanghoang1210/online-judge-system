@@ -16,7 +16,6 @@ namespace judge.system.core.Controllers
 
         /// <summary>
         /// Get problem in Leetcode and insert into DB
-        /// Default 100 problems
         /// </summary>
         /// <returns></returns>
         [HttpGet]
