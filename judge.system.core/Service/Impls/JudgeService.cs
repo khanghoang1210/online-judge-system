@@ -1,13 +1,32 @@
-﻿
+﻿using judge.system.core.Database;
 using judge.system.core.DTOs.Requests.Judge;
 using judge.system.core.DTOs.Responses.Judge;
 using judge.system.core.Service.Interface;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace judge.system.core.Service.Impls
 {
     public class JudgeService : IJudgeService
     {
+        private readonly Context _context;
+        public JudgeService(Context context)
+        {
+            _context = context;
+        }
+        public async Task<List<int>> GetInOut(int id)
+        {
+            try
+            {
+                var problem = await _context.ProblemDetails.FirstOrDefaultAsync(p => p.ProblemId == id);
+                var input = problem.TestCases.Select(x => x.Input);
+                return input.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<SubmitCodeRes> Submit(SubmitCodeReq submission)
         {
 
@@ -26,7 +45,6 @@ namespace judge.system.core.Service.Impls
             var tempPath = Path.GetTempFileName();
             string extension = language switch
             {
-                "csharp" => ".cs",
                 "python" => ".py",
                 "cpp" => ".cpp",
                 "java" => ".java",
@@ -36,7 +54,6 @@ namespace judge.system.core.Service.Impls
 
             if (language == "java")
             {
-                // Tìm tên lớp public trong mã nguồn Java
                 var publicClassLine = sourceCode.Split('\n').FirstOrDefault(line => line.Contains("public class"));
                 if (publicClassLine != null)
                 {
@@ -62,10 +79,6 @@ namespace judge.system.core.Service.Impls
 
             switch (language)
             {
-                case "csharp":
-                    processInfo.FileName = "dotnet";
-                    processInfo.Arguments = $"run {filePath}";
-                    break;
                 case "javascript":
 
                     processInfo.FileName = "node";
@@ -77,7 +90,6 @@ namespace judge.system.core.Service.Impls
                     break;
 
                 case "cpp":
-                    // Biên dịch C++
                     var exeFilePath = Path.ChangeExtension(filePath, ".exe");
                     var compileProcessInfo = new ProcessStartInfo
                     {
@@ -104,7 +116,6 @@ namespace judge.system.core.Service.Impls
                     break;
 
                 case "java":
-                    // Biên dịch Java
                     var compileJavaProcessInfo = new ProcessStartInfo
                     {
                         FileName = "javac",

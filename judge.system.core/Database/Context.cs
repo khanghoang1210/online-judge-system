@@ -1,5 +1,7 @@
 ﻿using judge.system.core.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Newtonsoft.Json;
 
 namespace judge.system.core.Database
 {
@@ -11,15 +13,28 @@ namespace judge.system.core.Database
         public DbSet<Problem> Problems { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<ProblemDetail> ProblemDetails { get; set; }
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder
-        //    .Entity<Problem>()
-        //    .Property(p => p.TestCases)
-        //    .HasColumnType("jsonb")
-        //    .IsRequired();
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            var converter = new JsonbValueConverter<List<TestCase>>();
 
-        //}
+            modelBuilder
+                .Entity<ProblemDetail>()
+                .Property(p => p.TestCases)
+                .HasConversion(converter)
+                .HasColumnType("jsonb")
+                .IsRequired();
+        }
+
+        public class JsonbValueConverter<T> : ValueConverter<T, string>
+        {
+            public JsonbValueConverter()
+                : base(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<T>(v))
+            {
+            }
+        }
     }
 }

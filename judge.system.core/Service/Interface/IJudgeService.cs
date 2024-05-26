@@ -6,5 +6,6 @@ namespace judge.system.core.Service.Interface
     public interface IJudgeService
     {
         Task<SubmitCodeRes> Submit(SubmitCodeReq submitCodeReq);
+        Task<List<int>> GetInOut(int id);
     }
 }

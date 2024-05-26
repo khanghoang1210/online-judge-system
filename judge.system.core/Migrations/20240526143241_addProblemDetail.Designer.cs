@@ -3,19 +3,21 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using judge.system.core.Database;
-using judge.system.core.Models;
 
 #nullable disable
 
 namespace judge.system.core.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20240526143241_addProblemDetail")]
+    partial class addProblemDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,46 +82,6 @@ namespace judge.system.core.Migrations
                     b.HasKey("ProblemId");
 
                     b.ToTable("problem");
-                });
-
-            modelBuilder.Entity("judge.system.core.Models.ProblemDetail", b =>
-                {
-                    b.Property<int>("ProblemDetailId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProblemDetailId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Hint")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("MemoryLimit")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProblemId")
-                        .HasColumnType("integer");
-
-                    b.Property<List<TestCase>>("TestCases")
-                        .IsRequired()
-                        .HasColumnType("jsonb");
-
-                    b.Property<float>("TimeLimit")
-                        .HasColumnType("real");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("ProblemDetailId");
-
-                    b.HasIndex("ProblemId");
-
-                    b.ToTable("problem_detail");
                 });
 
             modelBuilder.Entity("judge.system.core.Models.RefreshToken", b =>
@@ -192,17 +154,6 @@ namespace judge.system.core.Migrations
                     b.HasKey("TagId");
 
                     b.ToTable("tag");
-                });
-
-            modelBuilder.Entity("judge.system.core.Models.ProblemDetail", b =>
-                {
-                    b.HasOne("judge.system.core.Models.Problem", "Problem")
-                        .WithMany()
-                        .HasForeignKey("ProblemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Problem");
                 });
 #pragma warning restore 612, 618
         }
