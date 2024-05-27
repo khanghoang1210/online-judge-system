@@ -12,7 +12,7 @@ const sliderItems = [
     chapters: 13,
     items: 149,
     progress: 0,
-    imgSrc: "https://image.nhandan.vn/Uploaded/2024/unqxwpejw/2023_09_24/anh-dep-giao-thong-1626.jpg",
+    imgSrc: "/img-problem1.png",
     link: "/",
   },
   {
@@ -20,7 +20,7 @@ const sliderItems = [
     chapters: 16,
     items: 81,
     progress: 0,
-    imgSrc: "https://image.nhandan.vn/Uploaded/2024/unqxwpejw/2023_09_24/anh-dep-giao-thong-1626.jpg",
+    imgSrc: "/img-problem2.png",
     link: "/",
   },
   {
@@ -28,7 +28,7 @@ const sliderItems = [
     chapters: 4,
     items: 17,
     progress: 0,
-    imgSrc: "https://image.nhandan.vn/Uploaded/2024/unqxwpejw/2023_09_24/anh-dep-giao-thong-1626.jpg",
+    imgSrc: "/img-problem3.png",
     link: "/",
   },
   {
@@ -36,14 +36,14 @@ const sliderItems = [
     chapters: 9,
     items: 48,
     progress: 0,
-    imgSrc: "https://image.nhandan.vn/Uploaded/2024/unqxwpejw/2023_09_24/anh-dep-giao-thong-1626.jpg",
+    imgSrc: "/img-problem4.png",
     link: "/",
   },{
     title: "The LeetCode Beginner's Guide",
     chapters: 4,
     items: 17,
     progress: 0,
-    imgSrc: "https://image.nhandan.vn/Uploaded/2024/unqxwpejw/2023_09_24/anh-dep-giao-thong-1626.jpg",
+    imgSrc: "/img-problem5.png",
     link: "/",
   },
   {
@@ -51,7 +51,7 @@ const sliderItems = [
     chapters: 9,
     items: 48,
     progress: 0,
-    imgSrc: "https://image.nhandan.vn/Uploaded/2024/unqxwpejw/2023_09_24/anh-dep-giao-thong-1626.jpg",
+    imgSrc: "/img-problem6.png",
     link: "/",
   },
   // Add more items as needed
@@ -92,36 +92,36 @@ const CustomSlider: React.FC<CustomSliderProps> = ({ title }) => {
 
   return (
     <>
-    <div className='slider-container px-4 py-8'>
-      <h2 className='text-2xl font-bold mb-4 text-white'>{title}</h2>
-      <Slider {...settings}>
-        {sliderItems.map((item, index) => (
-          <div key={index} className='px-2' >
-            <Link href={item.link}>
-              <div className='bg-white rounded-lg shadow-lg overflow-hidden m-2' style={{ height: "100%" }}>
-                <div style={{ position: "relative", height: "150px" }}>
-                  <Image
-                    src={item.imgSrc}
-                    alt={item.title}
-                    layout='fill'
-                    objectFit='cover'
-                    objectPosition='center'
-                  />
-                  <div className='p-4 absolute bottom-0 left-0 right-0 text-white'>
-                    <h3 className='text-lg font-bold'>{item.title}</h3>
-                    <div className='flex justify-between mt-2 text-sm'>
+      <div className='slider-container px-4 py-8'>
+        <h2 className='text-3xl font-bold mb-4 text-white'>{title}</h2>
+        <Slider {...settings}>
+          {sliderItems.map((item, index) => (
+            <div key={index} className='px-2' >
+              <Link href={item.link}>
+                <div className='text-3xl bg-white rounded-lg shadow-lg overflow-hidden m-0.5' style={{ height: "100%",position:"relative" }}>
+                  <div style={{ position: "relative", height: "150px" }}>
+                    <Image
+                      src={item.imgSrc}
+                      alt={item.title}
+                      layout='fill'
+                      objectFit='cover'
+                      objectPosition='center'
+                    />
+                  </div>
+                  <div className='p-4 text-black' >
+                    <h3 className='text-2xl text-white font-bold mb-2'  style={{position:"absolute",top:"24px",left:"20px",right:"20px"}}>{item.title}</h3>
+                    <div className='flex justify-between text-sm'>
                       <span>{item.chapters} Chapters</span>
                       <span>{item.items} Items</span>
                       <span>{item.progress}%</span>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          </div>
-        ))}
-      </Slider>
-    </div>
+              </Link>
+            </div>
+          ))}
+        </Slider>
+      </div>
     </>
   );
 };

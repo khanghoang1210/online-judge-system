@@ -6,7 +6,7 @@ const SampleNextArrow = (props:any) => {
   return (
     <div
       className={`${className} custom-arrow next`}
-      style={{ ...style, display: 'block', right: '10px' }}
+      style={{ ...style, display: 'flex', right: '10px' }}
       onClick={onClick}
     >
       <FaChevronRight className="text-black" />
@@ -19,7 +19,7 @@ const SamplePrevArrow = (props:any) => {
   return (
     <div
       className={`${className} custom-arrow prev`}
-      style={{ ...style, display: 'block', left: '10px' }}
+      style={{ ...style, display: 'block', left: '0px' }}
       onClick={onClick}
     >
       <FaChevronLeft className="text-black" />
