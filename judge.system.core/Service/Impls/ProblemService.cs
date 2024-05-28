@@ -3,6 +3,7 @@ using judge.system.core.Database;
 using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Problem;
 using judge.system.core.Service.Interface;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace judge.system.core.Service.Impls
@@ -24,13 +25,14 @@ namespace judge.system.core.Service.Impls
 
             foreach (var item in problems)
             {
-                //GetProblemRes problem = new GetProblemRes();
-                //problem.ProblemId = item.ProblemId;
-                //problem.Title = item.Title;
-                //problem.TitleSlug = item.TitleSlug;
-                //problem.Difficulty = item.Difficulty;
-                //problem.TagId = item.TagId;
+                List<string> tagName = new List<string>();
                 var problem = _mapper.Map<GetProblemRes>(item);
+                foreach (var tag in problem.TagId)
+                {
+                    var t = await _context.Tags.FirstOrDefaultAsync(x => x.TagId == tag);
+                    tagName.Add(t.TagName);
+                }
+                problem.TagId = tagName;
                 res.Add(problem);
             }
 
@@ -56,15 +58,6 @@ namespace judge.system.core.Service.Impls
             }
 
             var item = _mapper.Map<GetProblemRes>(problem);
-
-            //var item = new GetProblemRes()
-            //{
-            //    ProblemId = problem.ProblemId,
-            //    Title = problem.Title,
-            //    Description = problem.Description,
-            //    TimeLimit = problem.TimeLimit,
-            //    MemoryLimit = problem.MemoryLimit
-            //};
 
             return new APIResponse<GetProblemRes>
             {
