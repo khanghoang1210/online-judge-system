@@ -99,7 +99,7 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
             </Link>
           )}
           {/* {problemPage} */}
-          {user && (
+          {(
             <div className="cursor-pointer group relative">
               <Image
                 src="/avatar.png"
@@ -113,7 +113,7 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
             z-40 group-hover:scale-100 scale-0 
             transition-all duration-300 ease-in-out"
               >
-                <p className="text-sm">{user.nameid}</p>
+                <p className="text-sm">{user?user.nameid:null}</p>
               </div>
             </div>
           )}

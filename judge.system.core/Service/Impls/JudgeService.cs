@@ -20,6 +20,10 @@ namespace judge.system.core.Service.Impls
             {
                 var problem = await _context.ProblemDetails.FirstOrDefaultAsync(p => p.ProblemId == id);
                 var input = problem.TestCases.Select(x => x.Input);
+                foreach (var testCase in input)
+                {
+
+                }
                 return input.FirstOrDefault();
             }
             catch (Exception ex)
