@@ -4,7 +4,7 @@
     {
         Task<string> GetDailyProblemAsync();
         Task<string> GetSingleProblemAsync(string titleSlug);
-        Task<string> GetProblemListAsync(int limit = 100, string[] tags = null);
+        Task<string> GetProblemListAsync(int limit = 50, string[] tags = null);
 
     }
 }

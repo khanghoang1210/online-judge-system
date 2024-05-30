@@ -13,7 +13,9 @@ namespace judge.system.core.Models
 
         public string TitleSlug { get; set; }
         public string Difficulty { get; set; }
-        public List<string> TagId { get; set; }
+
+        public List<ProblemTag> ProblemTags { get; set; }
+        public List<Submission> Submissions { get; set; }
     }
 
 

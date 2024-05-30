@@ -14,6 +14,7 @@ namespace judge.system.core.Database
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<ProblemDetail> ProblemDetails { get; set; }
+        public DbSet<ProblemTag> ProblemTags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,6 +26,23 @@ namespace judge.system.core.Database
                 .HasConversion(converter)
                 .HasColumnType("jsonb")
                 .IsRequired();
+            modelBuilder.Entity<ProblemTag>()
+                .HasKey(pt => new { pt.ProblemId, pt.TagId });
+
+            modelBuilder.Entity<ProblemTag>()
+                .HasOne(pt => pt.Problem)
+                .WithMany(p => p.ProblemTags)
+                .HasForeignKey(pt => pt.ProblemId);
+
+            modelBuilder.Entity<ProblemTag>()
+                .HasOne(pt => pt.Tag)
+                .WithMany(t => t.ProblemTags)
+                .HasForeignKey(pt => pt.TagId);
+
+            modelBuilder.Entity<Problem>()
+                    .HasMany(p => p.Submissions)
+                    .WithOne(s => s.Problem)
+                    .HasForeignKey(s => s.ProblemId);
         }
 
         public class JsonbValueConverter<T> : ValueConverter<T, string>
