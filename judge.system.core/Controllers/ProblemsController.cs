@@ -24,7 +24,7 @@ namespace judge.system.core.Controllers
         }
 
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var res = await _problemService.GetAll();

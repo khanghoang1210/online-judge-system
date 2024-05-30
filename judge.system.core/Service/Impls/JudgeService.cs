@@ -46,6 +46,7 @@ namespace judge.system.core.Service.Impls
 
         private string GetSourceFilePath(string language, string sourceCode)
         {
+            string fullSourceCode = "";
             var tempPath = Path.GetTempFileName();
             string extension = language switch
             {
@@ -58,19 +59,46 @@ namespace judge.system.core.Service.Impls
 
             if (language == "java")
             {
-                var publicClassLine = sourceCode.Split('\n').FirstOrDefault(line => line.Contains("public class"));
+                fullSourceCode = @$"public class Solution{{
+
+	                                public static void main(String[] args){{
+
+		                                System.out.println(add(1,5));
+	                                }}
+                                    {sourceCode}
+                                }}";
+                var publicClassLine = fullSourceCode.Split('\n').FirstOrDefault(line => line.Contains("public class"));
                 if (publicClassLine != null)
                 {
                     var className = publicClassLine.Split(' ')[2];
-                    tempPath = Path.Combine(Path.GetTempPath(), $"{className}{extension}");
+                    tempPath = Path.Combine(Path.GetTempPath(), $"Solution{extension}");
                 }
+            }
+            else if (language == "cpp")
+            {
+                fullSourceCode = $@"#include <iostream>
+                                using namespace std;
+                                {sourceCode}
+                                int main() {{
+                                  
+                                    cout << add(1,2) << endl;
+
+                                    return 0;
+                                }}";
+
+                tempPath = Path.ChangeExtension(tempPath, extension);
+            }
+            else if (language == "python")
+            {
+                fullSourceCode = $"{sourceCode}" +
+                    $"\nprint(add(1,2))";
             }
             else
             {
                 tempPath = Path.ChangeExtension(tempPath, extension);
             }
 
-            File.WriteAllText(tempPath, sourceCode);
+            File.WriteAllText(tempPath, fullSourceCode);
             return tempPath;
         }
 

@@ -4,6 +4,7 @@ using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Problem;
 using judge.system.core.Service.Interface;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 
 namespace judge.system.core.Service.Impls
@@ -12,26 +13,34 @@ namespace judge.system.core.Service.Impls
     {
         private readonly Context _context;
         private readonly IMapper _mapper;
-        public ProblemService(Context context, IMapper mapper)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public ProblemService(Context context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<APIResponse<List<GetProblemRes>>> GetAll()
         {
             var problems = _context.Problems.ToList();
             List<GetProblemRes> res = new List<GetProblemRes>();
+            var currentUser = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
 
             foreach (var item in problems)
             {
                 List<string> tagName = new List<string>();
                 var problem = _mapper.Map<GetProblemRes>(item);
-                foreach (var tag in problem.TagId)
+
+                var problemTag = await _context.ProblemTags.Where(x => x.ProblemId == item.ProblemId).ToListAsync();
+                foreach (var tag in problemTag)
                 {
-                    var t = await _context.Tags.FirstOrDefaultAsync(x => x.TagId == tag);
-                    tagName.Add(t.TagName);
+                    var name = _context.Tags.FirstOrDefaultAsync(y => y.TagId == tag.TagId).Result;
+                    tagName.Add(name.TagName);
+
                 }
+
                 problem.TagId = tagName;
                 res.Add(problem);
             }
