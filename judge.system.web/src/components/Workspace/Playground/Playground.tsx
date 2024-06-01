@@ -4,6 +4,7 @@ import Split from "react-split";
 import CodeMirror from "@uiw/react-codemirror";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import { javascript } from "@codemirror/lang-javascript";
+import {python} from "@codemirror/lang-python"
 import EditorFooter from "./EditorFooter";
 import { Problem } from "@/utils/types/problem";
 // import { useAuthState } from "react-firebase-hooks/auth";
@@ -14,6 +15,7 @@ import { useRouter } from "next/router";
 
 // import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import { java } from "@codemirror/lang-java";
 
 type PlaygroundProps = {
 	problem: Problem;
@@ -122,7 +124,7 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 						value={userCode}
 						theme={vscodeDark}
 						onChange={onChange}
-						extensions={[javascript()]}
+						extensions={[java()]}
 						style={{ fontSize: settings.fontSize }}
 					/>
 				</div>

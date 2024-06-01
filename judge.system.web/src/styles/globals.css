@@ -2,6 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* Custom styles for react-slick */
+.custom-arrow {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.custom-arrow.next {
+  right: 10px;
+}
+
+.custom-arrow.prev {
+  left: 10px;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  content: none;
+}
+
+.slick-dots li button:before {
+  color: #000;
+}
+
 /* RESET */
 * {
 	box-sizing: border-box;

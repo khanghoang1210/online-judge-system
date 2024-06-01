@@ -22,7 +22,7 @@ namespace judge.system.core.Controllers
             var res = await _judgeService.Submit(req);
             return Ok(res);
         }
-        [HttpGet("{id}")]
+        [HttpGet("GetInputOut/{id}")]
         public async Task<IActionResult> Get(int id)
         {
             var res = await _judgeService.GetInOut(id);
