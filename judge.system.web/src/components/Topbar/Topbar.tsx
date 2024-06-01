@@ -76,7 +76,14 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
             </div>
           </div>
         )}
-
+				<div className='flex items-center gap-4 flex-1 justify-center'>
+                    <Link href='/' className='text-dark-gray-8 hover:text-brand-orange'>Explore</Link>
+                    <Link href='/problems' className='text-dark-gray-8 hover:text-brand-orange'>Problems</Link>
+                    <Link href='/contest' className='text-dark-gray-8 hover:text-brand-orange'>Contest</Link>
+                    <Link href='/discuss' className='text-dark-gray-8 hover:text-brand-orange'>Discuss</Link>
+                    <Link href='/interview' className='text-dark-gray-8 hover:text-brand-orange'>Interview</Link>
+                    <Link href='/store' className='text-dark-gray-8 hover:text-brand-orange'>Store</Link>
+                </div>
         <div className="flex items-center space-x-4 flex-1 justify-end">
           <div>
             <a
