@@ -13,7 +13,7 @@ const sliderItems = [
     items: 149,
     progress: 0,
     imgSrc: "/img-problem1.png",
-    link: "/",
+  
   },
   {
     title: "System Design for Interviews and Beyond",
@@ -21,7 +21,7 @@ const sliderItems = [
     items: 81,
     progress: 0,
     imgSrc: "/img-problem2.png",
-    link: "/",
+
   },
   {
     title: "The LeetCode Beginner's Guide",
@@ -29,7 +29,7 @@ const sliderItems = [
     items: 17,
     progress: 0,
     imgSrc: "/img-problem3.png",
-    link: "/",
+
   },
   {
     title: "Top Interview Questions",
@@ -37,14 +37,14 @@ const sliderItems = [
     items: 48,
     progress: 0,
     imgSrc: "/img-problem4.png",
-    link: "/",
+
   },{
     title: "The LeetCode Beginner's Guide",
     chapters: 4,
     items: 17,
     progress: 0,
     imgSrc: "/img-problem5.png",
-    link: "/",
+
   },
   {
     title: "Top Interview Questions",
@@ -52,7 +52,7 @@ const sliderItems = [
     items: 48,
     progress: 0,
     imgSrc: "/img-problem6.png",
-    link: "/",
+
   },
   // Add more items as needed
 ];
@@ -97,7 +97,7 @@ const CustomSlider: React.FC<CustomSliderProps> = ({ title }) => {
         <Slider {...settings}>
           {sliderItems.map((item, index) => (
             <div key={index} className='px-2' >
-              <Link href={item.link}>
+              <Link href={`postDetail?id=${index}`}   >
                 <div className='text-3xl bg-white rounded-lg shadow-lg overflow-hidden m-0.5' style={{ height: "100%",position:"relative" }}>
                   <div style={{ position: "relative", height: "150px" }}>
                     <Image
