@@ -1,8 +1,10 @@
 ﻿using judge.system.core.Database;
 using judge.system.core.DTOs.Requests.Judge;
 using judge.system.core.DTOs.Responses.Judge;
+using judge.system.core.Helper.Converter;
 using judge.system.core.Service.Interface;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace judge.system.core.Service.Impls
@@ -14,40 +16,79 @@ namespace judge.system.core.Service.Impls
         {
             _context = context;
         }
-        public async Task<List<int>> GetInOut(int id)
+        public async Task<List<TestCaseRes>> GetInOut(int id)
         {
             try
             {
                 var problem = await _context.ProblemDetails.FirstOrDefaultAsync(p => p.ProblemId == id);
-                var input = problem.TestCases.Select(x => x.Input);
-                foreach (var testCase in input)
-                {
-
-                }
-                return input.FirstOrDefault();
+                var result = problem.TestCases
+                          .Select(testCase => (testCase.Input, testCase.Output))
+                          .ToList();
+                var json = JsonConvert.SerializeObject(result);
+                var test = JsonConvert.DeserializeObject<List<TestCaseRes>>(json);
+                return test;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
+
         public async Task<SubmitCodeRes> Submit(SubmitCodeReq submission)
         {
+            try
+            {
+                var testCases = await GetInOut(submission.ProblemId);
+                var result = new SubmitCodeRes();
+                bool isAccept = true;
 
-            var sourceFilePath = GetSourceFilePath(submission.Language, submission.SourceCode);
+                foreach (var testCase in testCases)
+                {
+                    string param = Converter.DictionaryValuesToString(testCase.Item1);
+                    var sourceFilePath = await GetSourceFilePath(submission.Language, submission.SourceCode, submission.ProblemId, param);
 
-            var result = await RunCode(sourceFilePath, submission.Language);
+                    var response = await RunCode(sourceFilePath, submission.Language);
+                    if (response.Output != testCase.Item2.ToString())
+                    {
+                        isAccept = false;
+                    }
 
-            File.Delete(sourceFilePath);
+                    File.Delete(sourceFilePath);
+                }
+                if (!isAccept)
+                {
+                    return new SubmitCodeRes
+                    {
+                        Success = false,
+                        Output = "One or more test case is failed"
+                    };
+                }
+                return new SubmitCodeRes
+                {
+                    Success = true,
+                    Output = "Accepted"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new SubmitCodeRes
+                {
+                    Success = false,
+                    Errors = ex.Message
+                };
+            }
 
-            return result;
+
         }
 
 
-        private string GetSourceFilePath(string language, string sourceCode)
+        private async Task<string> GetSourceFilePath(string language, string sourceCode, int problemId, string param)
         {
             string fullSourceCode = "";
             var tempPath = Path.GetTempFileName();
+            var res = await _context.Problems.FirstOrDefaultAsync(p => p.ProblemId == problemId);
+            string functionName = Converter.ToPascalCase(res.Title);
+
             string extension = language switch
             {
                 "python" => ".py",
@@ -63,7 +104,7 @@ namespace judge.system.core.Service.Impls
 
 	                                public static void main(String[] args){{
 
-		                                System.out.println(add(1,5));
+		                                System.out.println({functionName}({param}));
 	                                }}
                                     {sourceCode}
                                 }}";
@@ -81,7 +122,7 @@ namespace judge.system.core.Service.Impls
                                 {sourceCode}
                                 int main() {{
                                   
-                                    cout << add(1,2) << endl;
+                                    cout << {functionName}({param}) << endl;
 
                                     return 0;
                                 }}";
@@ -91,12 +132,14 @@ namespace judge.system.core.Service.Impls
             else if (language == "python")
             {
                 fullSourceCode = $"{sourceCode}" +
-                    $"\nprint(add(1,2))";
+                    $"\nprint({functionName}({param}))";
             }
             else
             {
                 tempPath = Path.ChangeExtension(tempPath, extension);
             }
+
+
 
             File.WriteAllText(tempPath, fullSourceCode);
             return tempPath;
@@ -108,6 +151,7 @@ namespace judge.system.core.Service.Impls
             processInfo.RedirectStandardOutput = true;
             processInfo.RedirectStandardError = true;
             processInfo.UseShellExecute = false;
+
 
             switch (language)
             {
@@ -182,6 +226,7 @@ namespace judge.system.core.Service.Impls
                         Errors = "Unsupported language"
                     };
             }
+
 
             using var process = Process.Start(processInfo);
             var output = process.StandardOutput.ReadToEnd().Replace("\r\n", "");

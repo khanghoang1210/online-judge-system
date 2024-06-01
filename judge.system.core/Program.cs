@@ -27,6 +27,7 @@ builder.Services.AddScoped<ILeetCodeService, LeetCodeService>();
 builder.Services.AddScoped<IProblemService, ProblemService>();
 builder.Services.AddScoped<IJudgeService, JudgeService>();
 builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddDbContext<Context>(
     opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddAutoMapper(typeof(Program));

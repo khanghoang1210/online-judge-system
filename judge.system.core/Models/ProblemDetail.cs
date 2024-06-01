@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json.Linq;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace judge.system.core.Models
@@ -22,7 +23,8 @@ namespace judge.system.core.Models
     }
     public class TestCase
     {
-        public dynamic Input { get; set; }
-        public dynamic Output { get; set; }
+        public JToken Input { get; set; }
+        public JToken Output { get; set; }
+
     }
 }

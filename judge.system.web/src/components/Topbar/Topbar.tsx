@@ -95,7 +95,7 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
               Premium
             </a>
           </div>
-          {!user && (
+          {(  
             <Link
               href="/auth"
               //onClick={() => setAuthModalState((prev) => ({ ...prev, isOpen: true, type: "login" }))}
@@ -105,7 +105,7 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
               </button>
             </Link>
           )}
-          {/* {problemPage} */}
+          {problemPage}
           {(
             <div className="cursor-pointer group relative">
               <Image
@@ -120,7 +120,7 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
             z-40 group-hover:scale-100 scale-0 
             transition-all duration-300 ease-in-out"
               >
-                <p className="text-sm">{user?user.nameid:null}</p>
+                {/* <p className="text-sm">{user.nameid}</p> */}
               </div>
             </div>
           )}
