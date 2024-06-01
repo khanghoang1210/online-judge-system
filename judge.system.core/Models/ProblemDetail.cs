@@ -22,7 +22,7 @@ namespace judge.system.core.Models
     }
     public class TestCase
     {
-        public List<int> Input { get; set; }
-        public List<int> Output { get; set; }
+        public dynamic Input { get; set; }
+        public dynamic Output { get; set; }
     }
 }
