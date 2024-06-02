@@ -6,6 +6,6 @@ namespace judge.system.core.DTOs.Responses.Problem
     {
         public string Title { get; set; }
         public string Description { get; set; }
-        List<TestCaseRes> TestCases { get; set; }
+        public List<TestCaseRes> TestCases { get; set; }
     }
 }

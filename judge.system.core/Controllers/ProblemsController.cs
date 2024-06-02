@@ -28,5 +28,12 @@ namespace judge.system.core.Controllers
             var res = await _problemService.GetAll();
             return Ok(res);
         }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetProblemDetail(int problemId)
+        {
+            var res = await _problemService.GetProblemDetail(problemId);
+            return Ok(res);
+        }
     }
 }

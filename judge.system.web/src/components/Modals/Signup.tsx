@@ -8,7 +8,7 @@ type SignupProps = {
     
 };
 
-const API_URL = 'https://localhost:7004/api/Accounts/Create';
+const API_URL = 'http://localhost:5107/api/Accounts/Create';
 const Signup:React.FC<SignupProps> = () => {
     
     const setAuthModalState = useSetRecoilState(authModalState);
