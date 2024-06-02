@@ -12,6 +12,6 @@ namespace judge.system.core.Models
         public bool IsAccepted { get; set; }
         public int NumCasesPassed { get; set; }
         public int ProblemId { get; set; }
-        public int UserName { get; set; }
+        public string UserName { get; set; }
     }
 }
