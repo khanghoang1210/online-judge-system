@@ -19,17 +19,19 @@ type TestCase = {
   item2: any;
 };
 
-type Problem = {
+export type ProblemDetail = {
   title: string;
   description: string;
   testCases: TestCase[];
-};
+  functionName: string;
+    
+  };
 
 const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
   problemId,
   _solved,
 }) => {
-  const [problem, setProblem] = useState<Problem | null>(null);
+  const [problem, setProblem] = useState<ProblemDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);

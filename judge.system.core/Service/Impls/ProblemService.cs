@@ -2,6 +2,7 @@
 using judge.system.core.Database;
 using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Problem;
+using judge.system.core.Helper.Converter;
 using judge.system.core.Service.Interface;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -25,27 +26,21 @@ namespace judge.system.core.Service.Impls
 
         public async Task<APIResponse<List<GetProblemRes>>> GetAll()
         {
-            var problems = _context.Problems.ToList();
-            List<GetProblemRes> res = new List<GetProblemRes>();
+            var problems = await _context.Problems
+                .Include(p => p.ProblemTags)
+                    .ThenInclude(pt => pt.Tag)
+                .ToListAsync();
+
             var currentUser = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-
-            foreach (var item in problems)
+            var res = problems.Select(problem => new GetProblemRes
             {
-                List<string> tagName = new List<string>();
-                var problem = _mapper.Map<GetProblemRes>(item);
-
-                var problemTag = await _context.ProblemTags.Where(x => x.ProblemId == item.ProblemId).ToListAsync();
-                foreach (var tag in problemTag)
-                {
-                    var name = _context.Tags.FirstOrDefaultAsync(y => y.TagId == tag.TagId).Result;
-                    tagName.Add(name.TagName);
-
-                }
-
-                problem.TagId = tagName;
-                res.Add(problem);
-            }
+                ProblemId = problem.ProblemId,
+                Title = problem.Title,
+                TitleSlug = problem.TitleSlug,
+                Difficulty = problem.Difficulty,
+                TagId = problem.ProblemTags.Select(pt => pt.Tag.TagName).ToList()
+            }).ToList();
 
             return new APIResponse<List<GetProblemRes>>
             {
@@ -54,6 +49,7 @@ namespace judge.system.core.Service.Impls
                 Data = res
             };
         }
+
 
         public async Task<APIResponse<GetProblemRes>> GetById(int problemId)
         {
@@ -88,6 +84,7 @@ namespace judge.system.core.Service.Impls
                     Title = problemDetail.Title,
                     Description = problemDetail.Description,
                     TestCases = await _judgeService.GetInOut(problemId),
+                    FunctionName = Converter.ToPascalCase(problemDetail.Title),
                 };
 
                 return new APIResponse<GetProblemDetailRes>

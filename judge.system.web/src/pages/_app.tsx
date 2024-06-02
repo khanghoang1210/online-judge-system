@@ -10,7 +10,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     const handleRouteChange = (url: any) => {
-      console.log("App is changing to:", url);
+     
     };
 
     router.events.on("routeChangeComplete", handleRouteChange);
