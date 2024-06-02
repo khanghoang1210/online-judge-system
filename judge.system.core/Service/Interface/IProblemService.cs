@@ -7,5 +7,6 @@ namespace judge.system.core.Service.Interface
     {
         Task<APIResponse<GetProblemRes>> GetById(int id);
         Task<APIResponse<List<GetProblemRes>>> GetAll();
+        Task<APIResponse<GetProblemDetailRes>> GetProblemDetail(int id);
     }
 }
