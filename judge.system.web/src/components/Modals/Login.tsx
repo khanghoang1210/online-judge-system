@@ -8,7 +8,7 @@ import { CookiesProvider, useCookies } from 'react-cookie'
 type LoginProps = {
     
 };
-const API_URL = 'https://localhost:7004/api/Accounts/Login';
+const API_URL = 'http://localhost:5107/api/Accounts/Login';
 const Login:React.FC<LoginProps> = () => {
 
     const setAuthModalState = useSetRecoilState(authModalState);

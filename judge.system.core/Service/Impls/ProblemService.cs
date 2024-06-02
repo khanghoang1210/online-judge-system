@@ -14,11 +14,13 @@ namespace judge.system.core.Service.Impls
         private readonly Context _context;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public ProblemService(Context context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        private readonly IJudgeService _judgeService;
+        public ProblemService(Context context, IMapper mapper, IHttpContextAccessor httpContextAccessor, IJudgeService judgeService)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _judgeService = judgeService;
         }
 
         public async Task<APIResponse<List<GetProblemRes>>> GetAll()
@@ -76,9 +78,34 @@ namespace judge.system.core.Service.Impls
             };
         }
 
-        public Task<APIResponse<GetProblemDetailRes>> GetProblemDetail(int id)
+        public async Task<APIResponse<GetProblemDetailRes>> GetProblemDetail(int problemId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var problemDetail = await _context.ProblemDetails.FirstOrDefaultAsync(x => x.ProblemId == problemId);
+                var item = new GetProblemDetailRes
+                {
+                    Title = problemDetail.Title,
+                    Description = problemDetail.Description,
+                    TestCases = await _judgeService.GetInOut(problemId),
+                };
+
+                return new APIResponse<GetProblemDetailRes>
+                {
+                    StatusCode = 200,
+                    Message = "Success",
+                    Data = item
+                };
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse<GetProblemDetailRes>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+
+                };
+            }
         }
     }
 }
