@@ -75,5 +75,10 @@ namespace judge.system.core.Service.Impls
                 Data = item
             };
         }
+
+        public Task<APIResponse<GetProblemDetailRes>> GetProblemDetail(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
