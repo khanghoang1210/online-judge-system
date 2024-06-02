@@ -60,68 +60,107 @@ namespace judge.system.core.Service.Impls
 
         public async Task<APIResponse<LoginRes>> Login(LoginReq req)
         {
-            var user = _context.Accounts.FirstOrDefault(x => x.UserName == req.UserName);
-            if (user is null)
+            try
             {
+                var user = _context.Accounts.FirstOrDefault(x => x.UserName == req.UserName);
+                if (user is null)
+                {
+                    return new APIResponse<LoginRes>
+                    {
+                        StatusCode = 200,
+                        Message = $"User {req.UserName} does not exists",
+                    };
+                }
+                bool isValidPassword = BCrypt.Net.BCrypt.Verify(req.Password, user.Password);
+                var token = await TokenManager.GenerateToken(user, _configuration);
+
+                if (!isValidPassword)
+                {
+                    return new APIResponse<LoginRes>
+                    {
+                        StatusCode = 401,
+                        Message = $"Password is wrong",
+                    };
+                }
                 return new APIResponse<LoginRes>
                 {
                     StatusCode = 200,
-                    Message = $"User {req.UserName} does not exists",
+                    Message = $"Success",
+                    Data = token
                 };
             }
-            bool isValidPassword = BCrypt.Net.BCrypt.Verify(req.Password, user.Password);
-            var token = await TokenManager.GenerateToken(user, _configuration);
-
-            if (!isValidPassword)
+            catch (Exception ex)
             {
                 return new APIResponse<LoginRes>
                 {
-                    StatusCode = 401,
-                    Message = $"Password is wrong",
+                    StatusCode = 500,
+                    Message = ex.Message,
                 };
             }
-            return new APIResponse<LoginRes>
-            {
-                StatusCode = 200,
-                Message = $"Success",
-                Data = token
-            };
         }
 
         public async Task<APIResponse<List<ReadAccountsRes>>> ReadAll()
         {
-            var accounts = _context.Accounts.ToList();
-            List<ReadAccountsRes> res = new List<ReadAccountsRes>();
-
-            foreach (var account in accounts)
+            try
             {
-                ReadAccountsRes item = new ReadAccountsRes();
-                item.UserName = account.UserName;
-                item.FullName = account.FullName;
-                item.Email = account.Email;
-                res.Add(item);
+                var accounts = _context.Accounts.ToList();
+                List<ReadAccountsRes> res = new List<ReadAccountsRes>();
+
+                foreach (var account in accounts)
+                {
+                    ReadAccountsRes item = new ReadAccountsRes();
+                    item.UserName = account.UserName;
+                    item.FullName = account.FullName;
+                    item.Email = account.Email;
+                    res.Add(item);
+                }
+
+                return new APIResponse<List<ReadAccountsRes>>
+                {
+                    StatusCode = 200,
+                    Message = "Success",
+                    Data = res
+                };
             }
-
-            return new APIResponse<List<ReadAccountsRes>>
+            catch (Exception ex)
             {
-                StatusCode = 200,
-                Message = "Success",
-                Data = res
-            };
+                return new APIResponse<List<ReadAccountsRes>> { StatusCode = 500, Message = ex.Message };
+            }
         }
 
         public async Task<APIResponse<string>> Update(UpdateAccountReq req, string userName)
         {
-            var acc = _context.Accounts.FirstOrDefault(x => x.UserName == userName);
-            acc.FullName = req.FullName;
-            _context.Accounts.Update(acc);
-            _context.SaveChanges();
-            return new APIResponse<string>
+            try
             {
-                StatusCode = 200,
-                Message = "Success",
-                Data = acc.UserName
-            };
+                var acc = _context.Accounts.FirstOrDefault(x => x.UserName == userName);
+
+                if (acc == null)
+                {
+                    return new APIResponse<string>
+                    {
+                        StatusCode = 400,
+                        Message = $"User {userName} not found"
+                    };
+                }
+                acc.FullName = req.FullName;
+                _context.Accounts.Update(acc);
+                await _context.SaveChangesAsync();
+                return new APIResponse<string>
+                {
+                    StatusCode = 200,
+                    Message = "Success",
+                    Data = acc.UserName
+                };
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse<string>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+
+                };
+            }
         }
     }
 }

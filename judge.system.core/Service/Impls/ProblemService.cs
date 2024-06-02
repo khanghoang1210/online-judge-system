@@ -5,6 +5,7 @@ using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Problem;
 using judge.system.core.Service.Interface;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 
 namespace judge.system.core.Service.Impls
@@ -13,27 +14,35 @@ namespace judge.system.core.Service.Impls
     {
         private readonly Context _context;
         private readonly IMapper _mapper;
-        
-        public ProblemService(Context context, IMapper mapper)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public ProblemService(Context context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<APIResponse<List<GetProblemRes>>> GetAll()
         {
             var problems = await _context.Problems.ToListAsync();
             List<GetProblemRes> res = new List<GetProblemRes>();
+            var currentUser = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
 
             foreach (var item in problems)
             {
-                //GetProblemRes problem = new GetProblemRes();
-                //problem.ProblemId = item.ProblemId;
-                //problem.Title = item.Title;
-                //problem.TitleSlug = item.TitleSlug;
-                //problem.Difficulty = item.Difficulty;
-                //problem.TagId = item.TagId;
+                List<string> tagName = new List<string>();
                 var problem = _mapper.Map<GetProblemRes>(item);
+
+                var problemTag = await _context.ProblemTags.Where(x => x.ProblemId == item.ProblemId).ToListAsync();
+                foreach (var tag in problemTag)
+                {
+                    var name = _context.Tags.FirstOrDefaultAsync(y => y.TagId == tag.TagId).Result;
+                    tagName.Add(name.TagName);
+
+                }
+
+                problem.TagId = tagName;
                 res.Add(problem);
             }
 
@@ -60,21 +69,17 @@ namespace judge.system.core.Service.Impls
 
             var item = _mapper.Map<GetProblemRes>(problem);
 
-            //var item = new GetProblemRes()
-            //{
-            //    ProblemId = problem.ProblemId,
-            //    Title = problem.Title,
-            //    Description = problem.Description,
-            //    TimeLimit = problem.TimeLimit,
-            //    MemoryLimit = problem.MemoryLimit
-            //};
-
             return new APIResponse<GetProblemRes>
             {
                 StatusCode = 200,
                 Message = "Success",
                 Data = item
             };
+        }
+
+        public Task<APIResponse<GetProblemDetailRes>> GetProblemDetail(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

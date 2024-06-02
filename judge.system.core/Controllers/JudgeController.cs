@@ -1,4 +1,5 @@
-﻿using judge.system.core.Service;
+﻿using judge.system.core.DTOs.Requests.Judge;
+using judge.system.core.Service.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace judge.system.core.Controllers
@@ -7,12 +8,25 @@ namespace judge.system.core.Controllers
     [ApiController]
     public class JudgeController : ControllerBase
     {
-        [HttpPost]
-        public async Task<ActionResult> Judge(string code)
+
+        private readonly IJudgeService _judgeService;
+
+        public JudgeController(IJudgeService judgeService)
         {
-            var res = JudgeService.JudgePython(code);
-            return Ok(res);
+            _judgeService = judgeService;
         }
 
+        [HttpPost("[action]")]
+        public async Task<ActionResult> Submit(SubmitCodeReq req)
+        {
+            var res = await _judgeService.Submit(req);
+            return Ok(res);
+        }
+        [HttpGet("GetInputOut/{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var res = await _judgeService.GetInOut(id);
+            return Ok(res);
+        }
     }
 }

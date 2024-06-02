@@ -20,9 +20,14 @@ builder.Services.AddCors(options =>
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
+
+// Dependency Injection
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ILeetCodeService, LeetCodeService>();
 builder.Services.AddScoped<IProblemService, ProblemService>();
+builder.Services.AddScoped<IJudgeService, JudgeService>();
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddDbContext<Context>(
     opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddAutoMapper(typeof(Program));
@@ -62,7 +67,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
     });
-
 
 var app = builder.Build();
 app.UseCors("AllowOrigin");

@@ -12,6 +12,11 @@ namespace judge.system.core.Models
         public bool IsAccepted { get; set; }
         public int NumCasesPassed { get; set; }
         public int ProblemId { get; set; }
-        public string UserName { get; set; }
+        [ForeignKey("ProblemId")]
+        public Problem Problem { get; set; }
+        public int UserId { get; set; }
+        [ForeignKey("UserId")]
+        public Account Account { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

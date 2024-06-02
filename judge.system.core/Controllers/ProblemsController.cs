@@ -1,5 +1,4 @@
 ﻿using judge.system.core.Service.Interface;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace judge.system.core.Controllers
@@ -15,16 +14,15 @@ namespace judge.system.core.Controllers
             _problemService = problemService;
         }
 
-        [HttpGet("[action]: {problemId}")]
-        //[Authorize]
+        [HttpGet("{problemId}")]
         public async Task<IActionResult> GetById(int problemId)
         {
             var res = await _problemService.GetById(problemId);
             return Ok(res);
         }
 
-        [HttpGet("[action]")]
-        //[Authorize]
+        [HttpGet]
+
         public async Task<IActionResult> GetAll()
         {
             var res = await _problemService.GetAll();

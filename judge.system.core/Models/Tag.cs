@@ -10,5 +10,6 @@ namespace judge.system.core.Models
         public string TagId { get; set; }
         public string TagName { get; set; }
         public string TagSlug { get; set; }
+        public List<ProblemTag> ProblemTags { get; set; }
     }
 }

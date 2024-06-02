@@ -2,6 +2,7 @@
 using judge.system.core.DTOs.Responses;
 using judge.system.core.Models;
 using judge.system.core.Service.Interface;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace judge.system.core.Service.Impls
@@ -25,7 +26,6 @@ namespace judge.system.core.Service.Impls
 
         public async Task<string> GetProblemListAsync(int limit = 50, string[] tags = null)
         {
-
             var url = $"http://localhost:3000/problems?limit={limit}";
             if (tags != null && tags.Length > 0)
             {
@@ -34,54 +34,61 @@ namespace judge.system.core.Service.Impls
             }
 
             var response = await _httpClient.GetAsync(url);
-
             response.EnsureSuccessStatusCode();
 
             string data = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ProblemsetQuestionList>(data);
-            List<Tag> tagList = new List<Tag>();
 
             foreach (var item in result.LeetCodeProblemRes)
             {
-                var existingProblem = _context.Problems.FirstOrDefault(x => x.TitleSlug == item.TitleSlug);
+                var existingProblem = _context.Problems
+                                              .Include(p => p.ProblemTags)
+                                              .ThenInclude(pt => pt.Tag)
+                                              .FirstOrDefault(x => x.TitleSlug == item.TitleSlug);
                 if (existingProblem == null)
                 {
-                    var res = new Problem
+                    existingProblem = new Problem
                     {
                         Title = item.Title,
                         TitleSlug = item.TitleSlug,
                         Difficulty = item.Difficulty,
-                        TagId = item.TopicTags.Select(x => x.Id).ToList(),
+                        ProblemTags = new List<ProblemTag>()
                     };
-                    _context.Problems.Add(res);
+                    _context.Problems.Add(existingProblem);
                 }
 
-
-
-                foreach (var tag in item.TopicTags)
+                foreach (var tagDto in item.TopicTags)
                 {
-                    var existingTag = tagList.FirstOrDefault(x => x.TagId == tag.Id);
+                    var existingTag = _context.Tags.Local.FirstOrDefault(x => x.TagId == tagDto.Id)
+                                     ?? _context.Tags.FirstOrDefault(x => x.TagId == tagDto.Id);
+
                     if (existingTag == null)
                     {
-                        var newTag = new Tag
+                        existingTag = new Tag
                         {
-                            TagId = tag.Id,
-                            TagName = tag.Name,
-                            TagSlug = tag.Slug,
+                            TagId = tagDto.Id,
+                            TagName = tagDto.Name,
+                            TagSlug = tagDto.Slug,
                         };
-
-                        tagList.Add(newTag);
-                        _context.Tags.Add(newTag);
-
+                        _context.Tags.Add(existingTag);
                     }
 
+                    if (!existingProblem.ProblemTags.Any(pt => pt.TagId == tagDto.Id))
+                    {
+                        existingProblem.ProblemTags.Add(new ProblemTag
+                        {
+                            Problem = existingProblem,
+                            Tag = existingTag
+                        });
+                    }
                 }
-
             }
+
             await _context.SaveChangesAsync();
 
             return url;
         }
+
 
         public Task<string> GetSingleProblemAsync(string titleSlug)
         {
