@@ -112,7 +112,6 @@ namespace judge.system.core.Service.Impls
 
         public async Task<APIResponse<string>> Update(UpdateAccountReq req, string userName)
         {
-            var a = 1;
             var acc = _context.Accounts.FirstOrDefault(x => x.UserName == userName);
             acc.FullName = req.FullName;
             _context.Accounts.Update(acc);

@@ -15,16 +15,16 @@ namespace judge.system.core.Controllers
             _problemService = problemService;
         }
 
-        [HttpGet("{problemId}")]
-        [Authorize]
+        [HttpGet("[action]: {problemId}")]
+        //[Authorize]
         public async Task<IActionResult> GetById(int problemId)
         {
             var res = await _problemService.GetById(problemId);
             return Ok(res);
         }
 
-        [HttpGet]
-        [Authorize]
+        [HttpGet("[action]")]
+        //[Authorize]
         public async Task<IActionResult> GetAll()
         {
             var res = await _problemService.GetAll();
