@@ -11,11 +11,13 @@ import SettingsModal from "@/components/Modals/SettingsModal";
 type PreferenceNavProps = {
   settings: ISettings;
   setSettings: React.Dispatch<React.SetStateAction<ISettings>>;
+  onLanguageChange: (language: string) => void; // Thêm prop cho sự kiện thay đổi ngôn ngữ
 };
 
 const PreferenceNav: React.FC<PreferenceNavProps> = ({
   setSettings,
   settings,
+  onLanguageChange, // Nhận prop xử lý sự kiện thay đổi ngôn ngữ
 }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -67,6 +69,7 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
   const handleLanguageSelect = (language: string) => {
     setSelectedLanguage(language);
     setIsDropdownOpen(false);
+    onLanguageChange(language); // Gọi hàm xử lý sự kiện thay đổi ngôn ngữ và truyền ngôn ngữ mới
   };
 
   const languages = ["C++", "Python", "Java"];

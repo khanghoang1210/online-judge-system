@@ -1,20 +1,19 @@
+import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import { useState, useEffect } from "react";
 import PreferenceNav from "./PreferenceNav/PreferenceNav";
 import Split from "react-split";
 import CodeMirror from "@uiw/react-codemirror";
-import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import EditorFooter from "./EditorFooter";
 import { Problem } from "@/components/ProblemsTable/ProblemsTable";
-// import { useAuthState } from "react-firebase-hooks/auth";
-// import { auth, firestore } from "@/firebase/firebase";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
-
-// import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { java } from "@codemirror/lang-java";
+import { cpp } from "@codemirror/lang-cpp";
+import { ProblemDetail } from "../ProblemDescription/ProblemDescription";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -33,8 +32,10 @@ const Playground: React.FC<PlaygroundProps> = ({
   setSuccess,
   setSolved,
 }) => {
+  const [selectedLanguage, setSelectedLanguage] = useState("C++");
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
-  let [userCode, setUserCode] = useState<string>("");
+  const [problemDetail, setProblem] = useState<ProblemDetail | null>(null);
+  const [userCode, setUserCode] = useState<string>("");
 
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
 
@@ -44,80 +45,81 @@ const Playground: React.FC<PlaygroundProps> = ({
     dropdownIsOpen: false,
   });
 
-  //const [user] = useAuthState(auth);
   const {
     query: { pid },
   } = useRouter();
 
-  const handleSubmit = async () => {
-    // if (!user) {
-    // 	toast.error("Please login to submit your code", {
-    // 		position: "top-center",
-    // 		autoClose: 3000,
-    // 		theme: "dark",
-    // 	});
-    // 	return;
-    // }
-    // try {
-    // 	userCode = userCode.slice(userCode.indexOf(problem.starterFunctionName));
-    // 	const cb = new Function(`return ${userCode}`)();
-    // 	const handler = problems[pid as string].handlerFunction;
-    // 	if (typeof handler === "function") {
-    // 		const success = handler(cb);
-    // 		if (success) {
-    // 			toast.success("Congrats! All tests passed!", {
-    // 				position: "top-center",
-    // 				autoClose: 3000,
-    // 				theme: "dark",
-    // 			});
-    // 			setSuccess(true);
-    // 			setTimeout(() => {
-    // 				setSuccess(false);
-    // 			}, 4000);
-    // 			const userRef = doc(firestore, "users", user.uid);
-    // 			await updateDoc(userRef, {
-    // 				solvedProblems: arrayUnion(pid),
-    // 			});
-    // 			setSolved(true);
-    // 		}
-    // 	}
-    // } catch (error: any) {
-    // 	console.log(error.message);
-    // 	if (
-    // 		error.message.startsWith("AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:")
-    // 	) {
-    // 		toast.error("Oops! One or more test cases failed", {
-    // 			position: "top-center",
-    // 			autoClose: 3000,
-    // 			theme: "dark",
-    // 		});
-    // 	} else {
-    // 		toast.error(error.message, {
-    // 			position: "top-center",
-    // 			autoClose: 3000,
-    // 			theme: "dark",
-    // 		});
-    // 	}
-    // }
-  };
+  useEffect(() => {
+    const fetchProblemDetails = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5107/api/Problems/GetProblemDetail?problemId=${problem.problemId}`,
+          {
+            method: "GET",
+            mode: "cors",
+            headers: {
+              Accept: "application/json, text/plain",
+              "Content-Type": "application/json;charset=UTF-8",
+            },
+          }
+        );
+        const data = await response.json();
+        setProblem(data.data);
+      } catch (error) {
+        toast.error("Failed to fetch problem details");
+      }
+    };
+
+    fetchProblemDetails();
+  }, [problem.problemId]);
 
   useEffect(() => {
-    // const code = localStorage.getItem(`code-${pid}`);
-    // if (user) {
-    // 	setUserCode(code ? JSON.parse(code) : problem.starterCode);
-    // } else {
-    // 	setUserCode(problem.starterCode);
-    // }
-  }, []); // pid, user, problem.starterCode
+    if (problemDetail) {
+      let initialCode;
+      switch (selectedLanguage) {
+        case "Python":
+          initialCode = `def ${problemDetail.functionName}():`;
+          break;
+        case "Java":
+          initialCode = `public static int ${problemDetail.functionName}() {}`;
+          break;
+        case "C++":
+        default:
+          initialCode = `int ${problemDetail.functionName}() {}`;
+      }
+      setUserCode(initialCode);
+    }
+  }, [selectedLanguage, problemDetail]);
+
+  const handleSubmit = async () => {
+    // Handle submit logic
+  };
 
   const onChange = (value: string) => {
     setUserCode(value);
     localStorage.setItem(`code-${pid}`, JSON.stringify(value));
   };
 
+  const handleLanguageChange = (language: string) => {
+    setSelectedLanguage(language);
+  };
+
+  let languageMode;
+  switch (selectedLanguage) {
+    case "Python":
+      languageMode = python();
+      break;
+    case "Java":
+      languageMode = java();
+      break;
+    case "C++":
+    default:
+      languageMode = cpp();
+  }
+
   return (
     <div className="flex flex-col bg-dark-layer-1 relative overflow-x-hidden">
-      <PreferenceNav settings={settings} setSettings={setSettings} />
+      <PreferenceNav settings={settings} setSettings={setSettings} onLanguageChange={handleLanguageChange} />
 
       <Split
         className="h-[calc(100vh-94px)]"
@@ -130,12 +132,11 @@ const Playground: React.FC<PlaygroundProps> = ({
             value={userCode}
             theme={vscodeDark}
             onChange={onChange}
-            extensions={[java()]}
+            extensions={[languageMode]}
             style={{ fontSize: settings.fontSize }}
           />
         </div>
         <div className="w-full px-5 overflow-auto">
-          {/* testcase heading */}
           <div className="flex h-10 items-center space-x-6">
             <div className="relative flex h-full flex-col justify-center cursor-pointer">
               <div className="text-sm font-medium leading-5 text-white">
@@ -155,8 +156,8 @@ const Playground: React.FC<PlaygroundProps> = ({
                 <div className="flex flex-wrap items-center gap-y-4">
                   <div
                     className={`font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
-										${activeTestCaseId === index ? "text-white" : "text-gray-500"}
-									`}
+                      ${activeTestCaseId === index ? "text-white" : "text-gray-500"}
+                    `}
                   >
                     Case {index + 1}
                   </div>
