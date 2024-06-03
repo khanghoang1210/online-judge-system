@@ -18,13 +18,16 @@ namespace judge.system.core.Controllers
             _submissionService = submissionService;
         }
 
-        //[HttpGet("[action]")]
-        //[Authorize]
-        //public async Task<IActionResult> Get20NearestSubmissions([FromQuery] GetSubmissionReq request)
-        //{
-        //    var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "AccountId")?.Value);
-        //    var submissions = await _submissionService.Get20Nearest(userId, request.size);
-        //    return Ok(submissions);
-        //}
+        [HttpGet]
+        public async Task<IActionResult> GetNNearest()
+        {
+            var response = await _submissionService.GetNNearest();
+            
+            if (response.StatusCode == 200)
+            {
+                return Ok(response);
+            }
+            return StatusCode(response.StatusCode, response.Message);
+        }
     }
 }

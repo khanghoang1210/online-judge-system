@@ -3,10 +3,10 @@ using judge.system.core.Database;
 using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Submission;
 using judge.system.core.Service.Interface;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+
 
 namespace judge.system.core.Service.Impls
 {
@@ -22,12 +22,12 @@ namespace judge.system.core.Service.Impls
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             
-            var currentUser = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var currentUser = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
         private int? GetCurrentUserId()
         {
-            var userIdString = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIdString = _httpContextAccessor.HttpContext?.User.FindFirstValue("Id");
             
             if (int.TryParse(userIdString, out var userId))
             {
@@ -38,9 +38,9 @@ namespace judge.system.core.Service.Impls
 
         public async Task<APIResponse<List<string>>> GetLanguageList()
         {
-            var currentUserId = GetCurrentUserId();
+            var currentUser = GetCurrentUserId();
 
-            if (currentUserId == null)
+            if (currentUser == null)
             {
                 return new APIResponse<List<string>>
                 {
@@ -52,7 +52,7 @@ namespace judge.system.core.Service.Impls
             }
 
             var languages = await _context.Submissions
-                .Where(s => s.UserId == currentUserId && s.IsAccepted)
+                .Where(s => s.UserId == currentUser && s.IsAccepted)
                 .Select(s => s.Language)
                 .Distinct()
                 .ToListAsync();
@@ -69,11 +69,12 @@ namespace judge.system.core.Service.Impls
             };
         }
 
-        public async Task<APIResponse<List<GetSubmissionRes>>> GetNNearest(int size)
+        public async Task<APIResponse<List<GetSubmissionRes>>> GetNNearest()
         {
-            var currentUserId = GetCurrentUserId();
+            int size = 20;
+            var currentUser = GetCurrentUserId();
 
-            if (currentUserId == null)
+            if (currentUser == null)
             {
                 return new APIResponse<List<GetSubmissionRes>>
                 {
@@ -85,7 +86,7 @@ namespace judge.system.core.Service.Impls
             }
 
             var submissions = await _context.Submissions
-                .Where(x => x.UserId == currentUserId)
+                .Where(x => x.UserId == currentUser)
                 .OrderByDescending(x => x.CreatedAt)
                 .Include(x => x.Problem)
                 .Take(size)
