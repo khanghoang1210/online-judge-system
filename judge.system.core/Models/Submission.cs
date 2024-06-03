@@ -18,5 +18,6 @@ namespace judge.system.core.Models
         [ForeignKey("UserId")]
         public Account Account { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string Language { get; set; }
     }
 }

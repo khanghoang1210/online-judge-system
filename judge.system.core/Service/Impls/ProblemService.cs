@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using judge.system.core.Database;
-using judge.system.core.DTOs.Requests.Problem;
 using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Problem;
 using judge.system.core.Service.Interface;
