@@ -6,6 +6,7 @@ using judge.system.core.Service.Interface;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace judge.system.core.Service.Impls
 {
@@ -68,7 +69,7 @@ namespace judge.system.core.Service.Impls
             };
         }
 
-        public async Task<APIResponse<List<GetSubmissionRes>>> GetNNearest(int size, Models.Submission submission)
+        public async Task<APIResponse<List<GetSubmissionRes>>> GetNNearest(int size)
         {
             var currentUserId = GetCurrentUserId();
 
@@ -86,14 +87,17 @@ namespace judge.system.core.Service.Impls
             var submissions = await _context.Submissions
                 .Where(x => x.UserId == currentUserId)
                 .OrderByDescending(x => x.CreatedAt)
+                .Include(x => x.Problem)
                 .Take(size)
                 .ToListAsync();
 
-            var res = submissions.Select(submission =>
+            var res = submissions.Select(submission => new GetSubmissionRes
             {
-                var submissionRes = _mapper.Map<GetSubmissionRes>(submission);
-                submissionRes.Time = DateTime.Now - submission.CreatedAt;
-                return submissionRes;
+                ProblemTitle = submission.Problem.Title, 
+                Time = DateTime.Now - submission.CreatedAt,
+                IsAccepted = submission.IsAccepted,
+                NumCasesPassed = submission.NumCasesPassed,
+                Language = submission.Language
             }).ToList();
 
             return new APIResponse<List<GetSubmissionRes>>
