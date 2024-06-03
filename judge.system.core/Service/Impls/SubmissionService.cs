@@ -96,7 +96,7 @@ namespace judge.system.core.Service.Impls
             var res = submissions.Select(submission => new GetSubmissionRes
             {
                 ProblemTitle = submission.Problem.Title, 
-                Time = DateTime.Now - submission.CreatedAt,
+                Time = submission.CreatedAt,
                 IsAccepted = submission.IsAccepted,
                 NumCasesPassed = submission.NumCasesPassed,
                 Language = submission.Language
