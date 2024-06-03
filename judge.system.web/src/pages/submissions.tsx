@@ -1,23 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../styles/Submissions.module.css';
 import Topbar from '@/components/Topbar/Topbar';
+import { toast } from "react-toastify";
 
-const submissions = [
-  { timeSubmitted: '5 ngày, 19 giờ trước', question: 'Chuỗi con dài nhất không có ký tự lặp lại', status: 'Wrong answer', runtime: 'N/A', language: 'javascript' },
-  { timeSubmitted: '5 ngày, 19 giờ trước', question: 'Hai số', status: 'Wrong answer', runtime: 'N/A', language: 'javascript' },
-  { timeSubmitted: '5 ngày, 19 giờ trước', question: 'Hai số', status: 'Wrong answer', runtime: 'N/A', language: 'javascript' },
-  { timeSubmitted: '3 tuần, 5 ngày trước', question: 'Hai số', status: 'Accepted', runtime: '2110 ms', language: 'python' },
-  { timeSubmitted: '3 tuần, 5 ngày trước', question: 'Chứa nhiều nước nhất', status: 'Runtime Error', runtime: 'N/A', language: 'python' },
-  { timeSubmitted: '8 tháng, 3 tuần trước', question: 'Kết hợp hai bảng', status: 'Accepted', runtime: '1113 ms', language: 'mysql' },
-  { timeSubmitted: '1 năm, 2 tháng trước', question: 'Duyệt cây nhị phân theo thứ tự giữa', status: 'Accepted', runtime: '32 ms', language: 'python3' },
-  { timeSubmitted: '1 năm, 2 tháng trước', question: 'Kết hợp hai danh sách đã sắp xếp', status: 'Accepted', runtime: '39 ms', language: 'python3' },
+export type Submission = {
+  time: string;
+  problemTitle: string;
+  isAccepted: boolean;
+  numCasesPassed: string;
+  language: string;
+};
 
-];
+interface SubmissionsProps {
+  userName: string;
+}
 
-const Submissions: React.FC = () => {
+const Submissions: React.FC<SubmissionsProps> = ({ userName }) => {
+  const [submissionList, setSubmissionList] = useState<Submission[]>([]);
+
+  useEffect(() => {
+    const fetchProblemDetails = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5107/api/submissions?userName=${userName}`, 
+          {
+            method: "GET",
+            mode: "cors",
+            headers: {
+              Accept: "application/json, text/plain",
+              "Content-Type": "application/json;charset=UTF-8",
+            },
+          }
+        );
+        const data = await response.json();
+        setSubmissionList(data.data);
+      } catch (error) {
+        toast.error("Failed to fetch problem details");
+      }
+    };
+
+    fetchProblemDetails();
+  }, [userName]);
+
+  console.log(submissionList);
+
   return (
     <div className={styles.submissions}>
-      <Topbar/>
+      <Topbar />
       <h1 className={styles.title}>All My Submissions</h1>
       <table className={styles.table}>
         <thead>
@@ -30,18 +59,17 @@ const Submissions: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {submissions.map((submission, index) => (
+          {submissionList.map((submission, index) => (
             <tr key={index} className={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
-              <td>{submission.timeSubmitted}</td>
-              <td className={styles.question}>{submission.question}</td>
+              <td>{submission.time}</td>
+              <td className={styles.question}>{submission.problemTitle}</td>
               <td className={
-                submission.status === 'Accepted' ? styles.accepted :
-                submission.status === 'Wrong answer' ? styles['wrong-answer'] :
-                styles['runtime-error']
+                submission.isAccepted ? styles.accepted :
+                styles['wrong-answer']
               }>
-                {submission.status}
+                {submission.isAccepted ? 'Accepted' : 'Wrong Answer'}
               </td>
-              <td>{submission.runtime}</td>
+              <td>{submission.numCasesPassed}</td>
               <td>{submission.language}</td>
             </tr>
           ))}
