@@ -1,5 +1,7 @@
 ﻿using judge.system.core.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Newtonsoft.Json;
 
 namespace judge.system.core.Database
 {
@@ -10,15 +12,47 @@ namespace judge.system.core.Database
         public DbSet<Submission> Submissions { get; set; }
         public DbSet<Problem> Problems { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<ProblemDetail> ProblemDetails { get; set; }
+        public DbSet<ProblemTag> ProblemTags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder
-            .Entity<Problem>()
-            .Property(p => p.TestCases)
-            .HasColumnType("jsonb")
-            .IsRequired();
+            var converter = new JsonbValueConverter<List<TestCase>>();
 
+            modelBuilder
+                .Entity<ProblemDetail>()
+                .Property(p => p.TestCases)
+                .HasConversion(converter)
+                .HasColumnType("jsonb")
+                .IsRequired();
+            modelBuilder.Entity<ProblemTag>()
+                .HasKey(pt => new { pt.ProblemId, pt.TagId });
+
+            modelBuilder.Entity<ProblemTag>()
+                .HasOne(pt => pt.Problem)
+                .WithMany(p => p.ProblemTags)
+                .HasForeignKey(pt => pt.ProblemId);
+
+            modelBuilder.Entity<ProblemTag>()
+                .HasOne(pt => pt.Tag)
+                .WithMany(t => t.ProblemTags)
+                .HasForeignKey(pt => pt.TagId);
+
+            modelBuilder.Entity<Problem>()
+                    .HasMany(p => p.Submissions)
+                    .WithOne(s => s.Problem)
+                    .HasForeignKey(s => s.ProblemId);
+        }
+
+        public class JsonbValueConverter<T> : ValueConverter<T, string>
+        {
+            public JsonbValueConverter()
+                : base(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<T>(v))
+            {
+            }
         }
     }
 }
