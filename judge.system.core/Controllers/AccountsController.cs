@@ -6,6 +6,7 @@ namespace judge.system.core.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class AccountsController : ControllerBase
     {
         private readonly IAccountService _accountService;
