@@ -19,15 +19,11 @@ namespace judge.system.core.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetNNearest()
+        public async Task<IActionResult> GetAllSubmission(string userName)
         {
-            var response = await _submissionService.GetNNearest();
+            var response = await _submissionService.GetAllSubmission(userName);
             
-            if (response.StatusCode == 200)
-            {
-                return Ok(response);
-            }
-            return StatusCode(response.StatusCode, response.Message);
+            return Ok(response);
         }
     }
 }

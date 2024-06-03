@@ -69,12 +69,13 @@ namespace judge.system.core.Service.Impls
             };
         }
 
-        public async Task<APIResponse<List<GetSubmissionRes>>> GetNNearest()
+        public async Task<APIResponse<List<GetSubmissionRes>>> GetAllSubmission(string userName)
         {
             int size = 20;
-            var currentUser = GetCurrentUserId();
+            
+            var user = _context.Accounts.FirstOrDefault(a => a.UserName == userName);
 
-            if (currentUser == null)
+            if (user.Id == null)
             {
                 return new APIResponse<List<GetSubmissionRes>>
                 {
@@ -86,7 +87,7 @@ namespace judge.system.core.Service.Impls
             }
 
             var submissions = await _context.Submissions
-                .Where(x => x.UserId == currentUser)
+                .Where(x => x.UserId == user.Id)
                 .OrderByDescending(x => x.CreatedAt)
                 .Include(x => x.Problem)
                 .Take(size)
