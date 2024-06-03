@@ -24,7 +24,6 @@ export type ProblemDetail = {
   description: string;
   testCases: TestCase[];
   functionName: string;
-    
   };
 
 const ProblemDescription: React.FC<ProblemDescriptionProps> = ({

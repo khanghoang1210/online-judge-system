@@ -92,22 +92,10 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
             Contest
           </Link>
           <Link
-            href="/discuss"
+            href="/submissions"
             className="text-dark-gray-8 hover:text-brand-orange"
           >
-            Discuss
-          </Link>
-          <Link
-            href="/interview"
-            className="text-dark-gray-8 hover:text-brand-orange"
-          >
-            Interview
-          </Link>
-          <Link
-            href="/store"
-            className="text-dark-gray-8 hover:text-brand-orange"
-          >
-            Store
+            Submissions
           </Link>
         </div>
         <div className="flex items-center space-x-4 flex-1 justify-end">

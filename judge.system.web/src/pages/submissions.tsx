@@ -23,9 +23,9 @@ const Submissions: React.FC = () => {
         <thead>
           <tr>
             <th>Time Submitted</th>
-            <th>Question</th>
+            <th>Title</th>
             <th>Status</th>
-            <th>Runtime</th>
+            <th>Num Cases Passed</th>
             <th>Language</th>
           </tr>
         </thead>
