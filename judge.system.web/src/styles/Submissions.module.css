@@ -1,0 +1,58 @@
+.submissions {
+  padding: 20px;
+}
+
+.title {
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+  margin: 15px 0px 20px;
+  font-weight: bold;
+  color:#000000D9;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0px;
+  color:#000000A6;
+  font: 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
+
+.evenRow {
+  background-color: #f9f9f9;
+}
+
+.oddRow:hover {
+  background-color: #ddd;
+}
+
+.accepted {
+  color: #449d44;
+  font-weight: bold;
+}
+
+.wrong-answer {
+  color: #DC143C;
+  font-weight: bold;
+}
+
+.runtime-error {
+  color: #DC143C;
+  font-weight: bold;
+}
+
+.question {
+  color: #1890ff;
+  text-decoration: none;
+}
+
