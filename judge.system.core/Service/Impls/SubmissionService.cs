@@ -73,9 +73,9 @@ namespace judge.system.core.Service.Impls
         {
             int size = 20;
             
-            var user = _context.Accounts.FirstOrDefault(a => a.UserName == userName);
+            var user = _context.Accounts.FirstOrDefault(a => a.UserName == userName).Id;
 
-            if (user.Id == null)
+            if (user == null)
             {
                 return new APIResponse<List<GetSubmissionRes>>
                 {
@@ -87,7 +87,7 @@ namespace judge.system.core.Service.Impls
             }
 
             var submissions = await _context.Submissions
-                .Where(x => x.UserId == user.Id)
+                .Where(x => x.UserId == user)
                 .OrderByDescending(x => x.CreatedAt)
                 .Include(x => x.Problem)
                 .Take(size)
