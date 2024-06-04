@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useSetRecoilState } from 'recoil';
 import { CookiesProvider, useCookies } from 'react-cookie'
+import { toast } from 'react-toastify';
 
 type LoginProps = {
     
@@ -38,7 +39,9 @@ const Login:React.FC<LoginProps> = () => {
                     'Content-Type': 'application/json;charset=UTF-8'
                 },
               });
-            if(!res.ok) throw Error(res.statusText);
+            if(!res.ok) {
+                toast.error(res.statusText, { position: "top-center", autoClose: 3000, theme: "dark" });
+            }
             const result = await res.json();
  
             if(result.statusCode == 200) {

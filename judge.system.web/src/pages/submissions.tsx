@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import styles from '../styles/Submissions.module.css';
 import Topbar from '@/components/Topbar/Topbar';
 import { toast } from "react-toastify";
+import { jwtDecode } from 'jwt-decode';
+import { useCookies } from 'react-cookie';
+import { Router, useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 export type Submission = {
   time: string;
@@ -17,12 +21,19 @@ interface SubmissionsProps {
 
 const Submissions: React.FC<SubmissionsProps> = ({ userName }) => {
   const [submissionList, setSubmissionList] = useState<Submission[]>([]);
+  const router = useRouter();
+  const [cookie] = useCookies(["token"]);
+  let user: any = undefined;
 
   useEffect(() => {
     const fetchProblemDetails = async () => {
+      if (!cookie.token) {
+        return router.push('/auth');
+      }
+      user = jwtDecode(cookie.token);
       try {
         const response = await fetch(
-          `http://localhost:5107/api/submissions?userName=khanghoang1`,
+          `http://localhost:5107/api/submissions?userName=${user.nameid}`,
           {
             method: "GET",
             mode: "cors",
