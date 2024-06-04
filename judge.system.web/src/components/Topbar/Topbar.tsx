@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { jwtDecode } from "jwt-decode";
 import Logout from "../Buttons/Logout";
@@ -14,12 +14,19 @@ type TopbarProps = {
 };
 
 const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
+  const [user,setUser] = useState<any>()
   const [cookie] = useCookies(["token"]);
   const router = useRouter();
-  let user: any = undefined;
-  if (cookie.token) {
-    user = jwtDecode(cookie.token);
-  }
+  useEffect(()=>{
+
+ 
+    if (cookie.token) {
+      setUser(jwtDecode(cookie.token));
+    }
+  },[])
+
+  
+console.log(user)
 
   // const handleProblemChange = (isForward: boolean) => {
   // 	const { order } = problems[router.query.pid as string] as Problem;
@@ -92,22 +99,10 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
             Contest
           </Link>
           <Link
-            href="/discuss"
+            href="/submissions"
             className="text-dark-gray-8 hover:text-brand-orange"
           >
-            Discuss
-          </Link>
-          <Link
-            href="/interview"
-            className="text-dark-gray-8 hover:text-brand-orange"
-          >
-            Interview
-          </Link>
-          <Link
-            href="/store"
-            className="text-dark-gray-8 hover:text-brand-orange"
-          >
-            Store
+            Submissions
           </Link>
         </div>
         <div className="flex items-center space-x-4 flex-1 justify-end">
@@ -121,7 +116,7 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
               Premium
             </a>
           </div>
-          {
+          {!user&&
             <Link
               href="/auth"
               //onClick={() => setAuthModalState((prev) => ({ ...prev, isOpen: true, type: "login" }))}
@@ -131,22 +126,24 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
               </button>
             </Link>
           }
-          {problemPage}
-          {
+
+          { user &&
             <div className="cursor-pointer group relative">
+              {
               <Image
                 src="/avatar.png"
                 alt="Avatar"
                 width={30}
                 height={30}
                 className="rounded-full"
-              />
+              />}
+             
               <div
                 className="absolute top-10 left-2/4 -translate-x-2/4  mx-auto bg-dark-layer-1 text-brand-orange p-2 rounded shadow-lg 
             z-40 group-hover:scale-100 scale-0 
             transition-all duration-300 ease-in-out"
-              >
-                {/* <p className="text-sm">{user.nameid}</p> */}
+              > 
+                <p className="text-sm">{user.nameid}</p>
               </div>
             </div>
           }
