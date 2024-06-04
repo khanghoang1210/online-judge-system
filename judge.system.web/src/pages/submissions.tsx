@@ -22,7 +22,7 @@ const Submissions: React.FC<SubmissionsProps> = ({ userName }) => {
     const fetchProblemDetails = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5107/api/submissions?userName=${userName}`, 
+          `http://localhost:5107/api/submissions?userName=${userName}`,
           {
             method: "GET",
             mode: "cors",
@@ -32,15 +32,15 @@ const Submissions: React.FC<SubmissionsProps> = ({ userName }) => {
             },
           }
         );
-        const data = await response.json();
+        const data = await response.json(); 
         setSubmissionList(data.data);
       } catch (error) {
         toast.error("Failed to fetch problem details");
       }
     };
-
+    
     fetchProblemDetails();
-  }, [userName]);
+  }, []);
 
   console.log(submissionList);
 
@@ -65,11 +65,11 @@ const Submissions: React.FC<SubmissionsProps> = ({ userName }) => {
               <td className={styles.question}>{submission.problemTitle}</td>
               <td className={
                 submission.isAccepted ? styles.accepted :
-                styles['wrong-answer']
+                styles['wrong-answer'] 
               }>
                 {submission.isAccepted ? 'Accepted' : 'Wrong Answer'}
               </td>
-              <td>{submission.numCasesPassed}</td>
+              <td>{submission.numCasesPassed}</td> 
               <td>{submission.language}</td>
             </tr>
           ))}
