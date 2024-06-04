@@ -22,7 +22,7 @@ const Submissions: React.FC<SubmissionsProps> = ({ userName }) => {
     const fetchProblemDetails = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5107/api/submissions?userName=${userName}`,
+          `http://localhost:5107/api/submissions?userName=khanghoang1`,
           {
             method: "GET",
             mode: "cors",
