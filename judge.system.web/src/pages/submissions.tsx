@@ -51,18 +51,18 @@ const Submissions: React.FC<SubmissionsProps> = ({ userName }) => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Time Submitted</th>
-            <th>Title</th>
-            <th>Status</th>
-            <th>Num Cases Passed</th>
-            <th>Language</th>
+            <th className={styles.timeSubmitted}>Time Submitted</th>
+            <th className={styles.tableTitle}>Title</th>
+            <th className={styles.status}>Status</th>
+            <th className={styles.numCasesPassed}>Num Cases Passed</th>
+            <th className={styles.language}>Language</th>
           </tr>
         </thead>
         <tbody>
           {submissionList.map((submission, index) => (
             <tr key={index} className={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
               <td>{submission.time}</td>
-              <td className={styles.question}>{submission.problemTitle}</td>
+              <td className={styles.problemTitle}>{submission.problemTitle}</td>
               <td className={
                 submission.isAccepted ? styles.accepted :
                 styles['wrong-answer'] 
