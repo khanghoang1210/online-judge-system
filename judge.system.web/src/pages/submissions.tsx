@@ -45,7 +45,7 @@ const Submissions: React.FC<SubmissionsProps> = ({ userName }) => {
   console.log(submissionList);
 
   return (
-    <div className={styles.submissions}>
+    <div className="bg-dark-layer-2 min-h-screen">
       <Topbar />
       <h1 className={styles.title}>All My Submissions</h1>
       <table className={styles.table}>
