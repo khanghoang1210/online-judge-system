@@ -25,20 +25,10 @@ namespace judge.system.core.Service.Impls
             //var currentUser = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        private int? GetCurrentUserId()
-        {
-            var userIdString = _httpContextAccessor.HttpContext?.User.FindFirstValue("Id");
-            
-            if (int.TryParse(userIdString, out var userId))
-            {
-                return userId;
-            }
-            return null;
-        }
 
-        public async Task<APIResponse<List<string>>> GetLanguageList()
+        public async Task<APIResponse<List<string>>> GetLanguageList(string userName)
         {
-            var currentUser = GetCurrentUserId();
+            var currentUser = _context.Accounts.FirstOrDefault(a => a.UserName == userName).Id;
 
             if (currentUser == null)
             {
