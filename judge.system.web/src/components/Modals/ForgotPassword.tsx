@@ -1,40 +1,46 @@
 import { authModalState } from '@/atoms/authModalAtom';
 import { Cookie } from 'next/font/google';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { CookiesProvider, useCookies } from 'react-cookie'
 import 'react-toastify/dist/ReactToastify.css'
 import { toast } from 'react-toastify';
+import { useSearchParams } from 'react-router-dom';
 
-type LoginProps = {
+type ForgotPasswordProps = {
     
 };
-const API_URL = 'http://localhost:5107/api/Accounts/Login';
-const Login:React.FC<LoginProps> = () => {
+const API_URL = 'http://localhost:5107/api/Accounts/ResetPassword';
 
-    const setAuthModalState = useSetRecoilState(authModalState);
-    const handleClick = (type:"login"|"register"|"forgotPassword") =>{
-        setAuthModalState((prev) =>({...prev, type}));
-    }
+const ForgotPassword:React.FC<ForgotPasswordProps> = () => {
+    const [inputs, setInputs] = useState({password:"", confirmPassword:""});
     const router = useRouter();
-    const [inputs, setInputs] = React.useState({userName:"", password:""});
+   
     const handleChangeInput = (e:React.ChangeEvent<HTMLInputElement>)=>{
         setInputs((prev)=>({...prev,[e.target.name]:e.target.value}));
 
     }
+    const [queryParam, setQueryParam] = useState('');
 
-    const [cookies, setCookie] = useCookies(['token'])
+            useEffect(() => {
+              // Lấy tham số trên URL hiện tại
+              const searchParams = new URLSearchParams(window.location.search);
+              const paramValue = searchParams.get('id');
+              setQueryParam(paramValue || 'default'); // Nếu không có tham số, sử dụng giá trị mặc định
+            }, []);
 
-    const handleLogin = async(e:React.FormEvent<HTMLFormElement>)=>{
+    const handleForgot = async(e:React.FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
-        if(!inputs.userName || !inputs.password) return alert("Please fill all field");
+        if(!inputs.password || !inputs.confirmPassword) return alert("Please fill all field");
         try {
-            const data = {userName: inputs.userName, password: inputs.password}
+           
+            const data = {password: inputs.password, confirmPassword: inputs.confirmPassword, token:queryParam}
             const res = await fetch(API_URL, {
                 method: "POST",
                 body: JSON.stringify(data),
                 mode: "cors",
+               
                 headers: {
                     'Accept': 'application/json, text/plain',
                     'Content-Type': 'application/json;charset=UTF-8'
@@ -45,44 +51,46 @@ const Login:React.FC<LoginProps> = () => {
             }
             const result = await res.json();
  
-            if(result.statusCode == 200) {
-                const token = result.data.accessToken;
-                setCookie('token', token, { path: '/' })
+            if(result.statusCode == 400) {
+                toast.warn("Unauthorize",{ position: "top-center", autoClose: 3000, theme: "dark" })
 
-            }else if(result.statusCode != 200){
-                toast.warn("User name or password are wrong",{ position: "top-center", autoClose: 3000, theme: "dark" })
+            }else if(result.statusCode == 200){
+                toast.success("Reset password successful",
+                { position: "top-center", autoClose: 4000, theme: "dark" })
+                router.push("/auth")
             }
+            
         } catch (error:any) {
             toast.error(error.message,{ position: "top-center", autoClose: 3000, theme: "dark" })
         }
     }
-    return <form className='space-y-6 px-6 pb-4' onSubmit={handleLogin}>
-    <h3 className='text-xl font-medium text-white'>Sign in to CodeFast</h3>
-    <div>
-        <label htmlFor='userName' className='text-sm font-medium block mb-2 text-gray-300'>
-            Your User Name
-        </label>
-        <input
-           onChange={handleChangeInput}
-            type='userName'
-            name='userName'
-            id='userName'
-            className='
-    border-2 outline-none sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
-    bg-gray-600 border-gray-500 placeholder-gray-400 text-white
-'
-            placeholder='johnwick'
-        />
-    </div>
+    return <form className='space-y-6 px-6 pb-4' onSubmit={handleForgot}>
+    <h3 className='text-xl font-medium text-white'>Reset Password</h3>
     <div>
         <label htmlFor='password' className='text-sm font-medium block mb-2 text-gray-300'>
-            Your Password
+            New Password
         </label>
         <input
         onChange={handleChangeInput}
             type='password'
             name='password'
             id='password'
+            className='
+    border-2 outline-none sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
+    bg-gray-600 border-gray-500 placeholder-gray-400 text-white
+'
+            placeholder='*******'
+        />
+    </div>
+    <div>
+        <label htmlFor='password' className='text-sm font-medium block mb-2 text-gray-300'>
+            Confirm Password
+        </label>
+        <input
+        onChange={handleChangeInput}
+            type='password'
+            name='confirmPassword'
+            id='confirmPassword'
             className='
     border-2 outline-none sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
     bg-gray-600 border-gray-500 placeholder-gray-400 text-white
@@ -97,19 +105,8 @@ const Login:React.FC<LoginProps> = () => {
         text-sm px-5 py-2.5 text-center bg-brand-orange hover:bg-brand-orange-s
     '
     >
-        Login
+       Reset
     </button>
-    <button className='flex w-full justify-end' onClick={()=>handleClick("forgotPassword")}>
-        <a href='#' className='text-sm block text-brand-orange hover:underline w-full text-right'>
-            Forgot Password?
-        </a>
-    </button>
-    <div className='text-sm font-medium text-gray-300'>
-        Not Registered?{" "}
-        <a href='#' className='text-blue-700 hover:underline' onClick={()=>handleClick("register")}>
-            Create account
-        </a>
-    </div>
 </form>
 }
-export default Login;
+export default ForgotPassword;

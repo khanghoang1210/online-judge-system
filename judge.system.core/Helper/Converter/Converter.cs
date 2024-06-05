@@ -1,10 +1,19 @@
-﻿using System.Globalization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Globalization;
 using System.Text;
 
 namespace judge.system.core.Helper.Converter
 {
     public class Converter
     {
+        public static DateTime ConvertToDateTime(long utcDate)
+        {
+            var dateTimeInterval = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTimeInterval.AddSeconds(utcDate).ToUniversalTime();
+
+            return dateTimeInterval;
+        }
         public static string ToPascalCase(string input)
         {
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
@@ -37,4 +46,38 @@ namespace judge.system.core.Helper.Converter
             return outputString.ToString();
         }
     }
+    public class DynamicDictionaryConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return (objectType == typeof(Dictionary<string, dynamic>));
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            var dictionary = new Dictionary<dynamic, dynamic>();
+            var jsonObject = JObject.Load(reader);
+
+            foreach (var property in jsonObject.Properties())
+            {
+                dictionary[property.Name] = property.Value.ToObject<dynamic>();
+            }
+
+            return dictionary;
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            var dictionary = (Dictionary<string, dynamic>)value;
+            var jsonObject = new JObject();
+
+            foreach (var kvp in dictionary)
+            {
+                jsonObject[kvp.Key] = JToken.FromObject(kvp.Value, serializer);
+            }
+
+            jsonObject.WriteTo(writer);
+        }
+    }
+
 }

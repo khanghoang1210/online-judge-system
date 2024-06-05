@@ -4,7 +4,8 @@ import Topbar from '@/components/Topbar/Topbar';
 import { toast } from "react-toastify";
 import { jwtDecode } from 'jwt-decode';
 import { useCookies } from 'react-cookie';
-import { Router, useNavigate } from 'react-router-dom';
+import { Router } from 'react-router-dom';
+import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from 'next/router';
 
 export type Submission = {
@@ -28,7 +29,13 @@ const Submissions: React.FC<SubmissionsProps> = ({ userName }) => {
   useEffect(() => {
     const fetchProblemDetails = async () => {
       if (!cookie.token) {
+        toast.warn("Please login to access your submission", {
+          position: "top-center",
+          autoClose: 3000,
+          theme: "dark"
+        });
         return router.push('/auth');
+       
       }
       user = jwtDecode(cookie.token);
       try {
