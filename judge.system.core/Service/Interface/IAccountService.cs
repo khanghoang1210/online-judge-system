@@ -10,5 +10,8 @@ namespace judge.system.core.Service.Interface
         Task<APIResponse<List<ReadAccountsRes>>> ReadAll();
         Task<APIResponse<string>> Update(UpdateAccountReq req, string userName);
         Task<APIResponse<LoginRes>> Login(LoginReq req);
+        Task<APIResponse<string>> ForgotPassword(string email);
+        Task<APIResponse<string>> ResetPassword(ResetPasswordReq req);
+        Task<APIResponse<LoginRes>> RefreshToken(TokenReq tokenRequest);
     }
 }

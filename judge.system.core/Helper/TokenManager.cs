@@ -1,5 +1,7 @@
-﻿using judge.system.core.DTOs.Responses.Account;
+﻿using judge.system.core.Database;
+using judge.system.core.DTOs.Responses.Account;
 using judge.system.core.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -20,6 +22,10 @@ namespace judge.system.core.Helper
             var jwtTokenHandler = new JwtSecurityTokenHandler();
             var secretKey = configuration.GetValue<string>("AppSettings:SecretKey");
             var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
+            var options = new DbContextOptionsBuilder<Context>()
+.UseNpgsql(configuration.GetValue<string>("ConnectionStrings:Default"))
+.Options;
+            Context context = new Context(options);
 
             var tokenDescription = new SecurityTokenDescriptor
             {
@@ -43,16 +49,16 @@ namespace judge.system.core.Helper
                 Id = Guid.NewGuid(),
                 JwtId = token.Id,
                 Token = refreshToken,
-                UserId = 1,
+                UserId = user.Id,
                 IsUsed = false,
                 IsRevoked = false,
                 CreatedAt = DateTime.UtcNow,
                 ExpiredAt = DateTime.UtcNow.AddHours(1)
             };
-            //Context context = Context;
-            //context.RefreshTokens.Add(refreshTokenEntity);
 
-            // await context.SaveChangesAsync();
+            context.RefreshTokens.Add(refreshTokenEntity);
+
+            await context.SaveChangesAsync();
             return new LoginRes
             {
                 AccessToken = accessToken,

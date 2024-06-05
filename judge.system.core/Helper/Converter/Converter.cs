@@ -7,6 +7,13 @@ namespace judge.system.core.Helper.Converter
 {
     public class Converter
     {
+        public static DateTime ConvertToDateTime(long utcDate)
+        {
+            var dateTimeInterval = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTimeInterval.AddSeconds(utcDate).ToUniversalTime();
+
+            return dateTimeInterval;
+        }
         public static string ToPascalCase(string input)
         {
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
