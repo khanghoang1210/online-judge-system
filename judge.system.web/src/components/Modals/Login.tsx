@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useSetRecoilState } from 'recoil';
 import { CookiesProvider, useCookies } from 'react-cookie'
+import 'react-toastify/dist/ReactToastify.css'
 import { toast } from 'react-toastify';
 
 type LoginProps = {
@@ -48,12 +49,11 @@ const Login:React.FC<LoginProps> = () => {
                 const token = result.data.accessToken;
                 setCookie('token', token, { path: '/' })
 
+            }else if(result.statusCode != 200){
+                toast.warn("User name or password are wrong",{ position: "top-center", autoClose: 3000, theme: "dark" })
             }
-            
-           
-            
         } catch (error:any) {
-            alert(error.message)
+            toast.error(error.message,{ position: "top-center", autoClose: 3000, theme: "dark" })
         }
     }
     return <form className='space-y-6 px-6 pb-4' onSubmit={handleLogin}>

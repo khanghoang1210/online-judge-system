@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import PreferenceNav from "./PreferenceNav/PreferenceNav";
 import Split from "react-split";
 import CodeMirror from "@uiw/react-codemirror";
-
+import "react-toastify/dist/ReactToastify.css";
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import EditorFooter from "./EditorFooter";
@@ -14,6 +14,9 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { java } from "@codemirror/lang-java";
 import { cpp } from "@codemirror/lang-cpp";
 import { ProblemDetail } from "../ProblemDescription/ProblemDescription";
+import { useCookies } from "react-cookie";
+import { jwtDecode } from "jwt-decode";
+import { Source_Code_Pro } from "next/font/google";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -35,8 +38,15 @@ const Playground: React.FC<PlaygroundProps> = ({
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
   const [problemDetail, setProblem] = useState<ProblemDetail | null>(null);
-  const [userCode, setUserCode] = useState<string>("");
 
+  const [user, setUser] = useState<any>();
+  const [cookie] = useCookies(["token"]);
+  const router = useRouter();
+  useEffect(() => {
+    if (cookie.token) {
+      setUser(jwtDecode(cookie.token));
+    }
+  }, []);
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
 
   const [settings, setSettings] = useState<ISettings>({
@@ -44,6 +54,8 @@ const Playground: React.FC<PlaygroundProps> = ({
     settingsModalIsOpen: false,
     dropdownIsOpen: false,
   });
+
+  const [userCode, setUserCode] = useState<string>("");
 
   const {
     query: { pid },
@@ -72,10 +84,9 @@ const Playground: React.FC<PlaygroundProps> = ({
 
     fetchProblemDetails();
   }, [problem.problemId]);
-
+  let initialCode;
   useEffect(() => {
     if (problemDetail) {
-      let initialCode;
       switch (selectedLanguage) {
         case "Python":
           initialCode = `def ${problemDetail.functionName}():`;
@@ -90,10 +101,8 @@ const Playground: React.FC<PlaygroundProps> = ({
       setUserCode(initialCode);
     }
   }, [selectedLanguage, problemDetail]);
-
-  const handleSubmit = async () => {
-    // Handle submit logic
-  };
+  const API_URL = "http://localhost:5107/api/Judge/Submit";
+  
 
   const onChange = (value: string) => {
     setUserCode(value);
@@ -116,10 +125,64 @@ const Playground: React.FC<PlaygroundProps> = ({
     default:
       languageMode = cpp();
   }
-
+  const [res, setRes] = useState();
+  const handleSubmit = async () => {
+    if (!user) {
+      console.log("errr");
+      toast.error("Please login to submit", {
+        position: "top-center",
+        autoClose: 3000,
+        theme: "dark",
+      });
+    }
+    try{
+      const data = {problemId: problem.problemId, sourceCode: userCode, language: selectedLanguage}
+      const res = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify(data),
+          mode: "cors",
+          headers: {
+              'Accept': 'application/json, text/plain',
+              'Content-Type': 'application/json;charset=UTF-8'
+          },
+        });
+        if(!res.ok) {
+          toast.error(res.statusText, { position: "top-center", autoClose: 3000, theme: "dark" });
+      }
+      const result = await res.json();
+ 
+      if(result.statusCode == 200) {
+          setRes(result.data.output)
+          toast.success("All test cases passed",{ position: "top-center", autoClose: 3000, theme: "dark" })
+      
+      }else if(result.statusCode == 204){
+          setRes(result.data.output)
+          toast.warn("One ore more test cases failed",{ position: "top-center", autoClose: 3000, theme: "dark" })
+      }
+      else if(result.statusCode == 400){
+        setRes(result.data.output)
+          toast.error("Compile Error",{ position: "top-center", autoClose: 3000, theme: "dark" })
+      }
+      else if(result.statusCode == 500){
+        toast.error("Internal Error",{ position: "top-center", autoClose: 3000, theme: "dark" })
+      }
+      
+    }
+    catch(error:any){
+      toast.error(error.message, {
+        position: "top-center",
+        autoClose: 3000,
+        theme: "dark",
+      })
+    }
+  };
   return (
     <div className="flex flex-col bg-dark-layer-1 relative overflow-x-hidden">
-      <PreferenceNav settings={settings} setSettings={setSettings} onLanguageChange={handleLanguageChange} />
+      <PreferenceNav
+        settings={settings}
+        setSettings={setSettings}
+        onLanguageChange={handleLanguageChange}
+      />
 
       <Split
         className="h-[calc(100vh-94px)]"
@@ -167,13 +230,13 @@ const Playground: React.FC<PlaygroundProps> = ({
           </div>
 
           <div className="font-semibold my-4">
-            <p className="text-sm font-medium mt-4 text-white">Input:</p>
+            <p className="text-sm font-medium mt-4 text-white">Expected Output: </p>
             <div className="w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2">
-              {/* {problem.examples[activeTestCaseId].inputText} */}
+              {problemDetail?.testCases[0].item2}
             </div>
-            <p className="text-sm font-medium mt-4 text-white">Output:</p>
+            <p className="text-sm font-medium mt-4 text-white">Actual Output:</p>
             <div className="w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2">
-              {/* {problem.examples[activeTestCaseId].outputText} */}
+             {res}
             </div>
           </div>
         </div>

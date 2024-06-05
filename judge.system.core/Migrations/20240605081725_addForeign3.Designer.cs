@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using judge.system.core.Database;
@@ -11,9 +12,11 @@ using judge.system.core.Database;
 namespace judge.system.core.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20240605081725_addForeign3")]
+    partial class addForeign3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,10 +100,6 @@ namespace judge.system.core.Migrations
 
                     b.Property<int>("ProblemId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("ReturnType")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("TestCases")
                         .IsRequired()

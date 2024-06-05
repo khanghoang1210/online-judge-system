@@ -43,7 +43,7 @@ namespace judge.system.core.Helper
                 Id = Guid.NewGuid(),
                 JwtId = token.Id,
                 Token = refreshToken,
-                UserId = user.UserName,
+                UserId = 1,
                 IsUsed = false,
                 IsRevoked = false,
                 CreatedAt = DateTime.UtcNow,
