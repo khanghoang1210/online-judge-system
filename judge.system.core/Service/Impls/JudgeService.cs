@@ -1,5 +1,6 @@
 ﻿using judge.system.core.Database;
 using judge.system.core.DTOs.Requests.Judge;
+using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Judge;
 using judge.system.core.Helper.Converter;
 using judge.system.core.Service.Interface;
@@ -22,8 +23,9 @@ namespace judge.system.core.Service.Impls
             {
                 var problem = await _context.ProblemDetails.FirstOrDefaultAsync(p => p.ProblemId == id);
                 var result = problem.TestCases
-                          .Select(testCase => (testCase.Input, testCase.Output))
-                          .ToList();
+                         .Select(testCase => (testCase.Input, testCase.Output))
+                         .ToList();
+
                 var json = JsonConvert.SerializeObject(result);
                 var test = JsonConvert.DeserializeObject<List<TestCaseRes>>(json);
                 return test;
@@ -34,47 +36,72 @@ namespace judge.system.core.Service.Impls
             }
         }
 
-        public async Task<SubmitCodeRes> Submit(SubmitCodeReq submission)
+        public async Task<APIResponse<SubmitCodeRes>> Submit(SubmitCodeReq submission)
         {
             try
             {
                 var testCases = await GetInOut(submission.ProblemId);
                 var result = new SubmitCodeRes();
                 bool isAccept = true;
-
+                var outputs = new List<dynamic>();
                 foreach (var testCase in testCases)
                 {
                     string param = Converter.DictionaryValuesToString(testCase.Item1);
                     var sourceFilePath = await GetSourceFilePath(submission.Language, submission.SourceCode, submission.ProblemId, param);
 
                     var response = await RunCode(sourceFilePath, submission.Language);
+                    if (response.Success is false)
+                    {
+                        isAccept = false;
+                        return new APIResponse<SubmitCodeRes>
+                        {
+                            StatusCode = 400,
+                            Message = "Compile Error",
+                            Data = new SubmitCodeRes
+                            {
+                                Success = false,
+                                Output = response.Errors
+                            }
+                        };
+                    }
                     if (response.Output != testCase.Item2.ToString())
                     {
                         isAccept = false;
+                        outputs.Add(response.Output);
                     }
-
+                    outputs.Add(response.Output);
                     File.Delete(sourceFilePath);
                 }
                 if (!isAccept)
                 {
-                    return new SubmitCodeRes
+                    return new APIResponse<SubmitCodeRes>
                     {
-                        Success = false,
-                        Output = "One or more test case is failed"
+                        StatusCode = 204,
+                        Message = "One or more test case is failed",
+                        Data = new SubmitCodeRes
+                        {
+                            Success = false,
+                            Output = outputs[0]
+                        }
                     };
                 }
-                return new SubmitCodeRes
+                return new APIResponse<SubmitCodeRes>
                 {
-                    Success = true,
-                    Output = "Accepted"
+                    StatusCode = 200,
+                    Message = "All test case passed",
+                    Data = new SubmitCodeRes
+                    {
+                        Success = true,
+                        Output = outputs[0]
+                    }
                 };
             }
             catch (Exception ex)
             {
-                return new SubmitCodeRes
+                return new APIResponse<SubmitCodeRes>
                 {
-                    Success = false,
-                    Errors = ex.Message
+                    StatusCode = 500,
+                    Message = ex.Message
                 };
             }
 
@@ -91,14 +118,14 @@ namespace judge.system.core.Service.Impls
 
             string extension = language switch
             {
-                "python" => ".py",
-                "cpp" => ".cpp",
-                "java" => ".java",
+                "Python" => ".py",
+                "C++" => ".cpp",
+                "Java" => ".java",
                 "javascript" => ".js",
                 _ => throw new NotSupportedException("Unsupported language")
             };
 
-            if (language == "java")
+            if (language == "Java")
             {
                 fullSourceCode = @$"public class Solution{{
 
@@ -115,7 +142,7 @@ namespace judge.system.core.Service.Impls
                     tempPath = Path.Combine(Path.GetTempPath(), $"Solution{extension}");
                 }
             }
-            else if (language == "cpp")
+            else if (language == "C++")
             {
                 fullSourceCode = $@"#include <iostream>
                                 using namespace std;
@@ -129,7 +156,7 @@ namespace judge.system.core.Service.Impls
 
                 tempPath = Path.ChangeExtension(tempPath, extension);
             }
-            else if (language == "python")
+            else if (language == "Python")
             {
                 fullSourceCode = $"{sourceCode}" +
                     $"\nprint({functionName}({param}))";
@@ -160,12 +187,12 @@ namespace judge.system.core.Service.Impls
                     processInfo.FileName = "node";
                     processInfo.Arguments = filePath;
                     break;
-                case "python":
+                case "Python":
                     processInfo.FileName = "python";
                     processInfo.Arguments = filePath;
                     break;
 
-                case "cpp":
+                case "C++":
                     var exeFilePath = Path.ChangeExtension(filePath, ".exe");
                     var compileProcessInfo = new ProcessStartInfo
                     {
@@ -191,7 +218,7 @@ namespace judge.system.core.Service.Impls
                     processInfo.FileName = exeFilePath;
                     break;
 
-                case "java":
+                case "Java":
                     var compileJavaProcessInfo = new ProcessStartInfo
                     {
                         FileName = "javac",

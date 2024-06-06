@@ -2,7 +2,7 @@
 {
     public class TestCaseRes
     {
-        public Dictionary<object, object> Item1 { get; set; }
-        public object Item2 { get; set; }
+        public Dictionary<dynamic, dynamic> Item1 { get; set; }
+        public dynamic Item2 { get; set; }
     }
 }

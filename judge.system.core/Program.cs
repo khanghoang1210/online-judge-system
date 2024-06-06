@@ -1,3 +1,4 @@
+using EmailService;
 using judge.system.core.Database;
 using judge.system.core.Service.Impls;
 using judge.system.core.Service.Interface;
@@ -27,7 +28,14 @@ builder.Services.AddScoped<ILeetCodeService, LeetCodeService>();
 builder.Services.AddScoped<IProblemService, ProblemService>();
 builder.Services.AddScoped<ISubmissionService, SubmissionService>();
 builder.Services.AddScoped<IJudgeService, JudgeService>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddHttpContextAccessor();
+
+// Email Service
+var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
+  .Get<EmailConfiguration>();
+
+builder.Services.AddSingleton(emailConfig);
 
 builder.Services.AddDbContext<Context>(
     opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));

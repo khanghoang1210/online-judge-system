@@ -54,7 +54,7 @@ console.log(user)
         }`}
       >
         <Link href="/" className="h-[22px] flex-1">
-          <Image src="/logo-full.png" alt="Logo" height={100} width={100} />
+          <Image src="/logo.png" alt="Logo" height={150} width={150} />
         </Link>
 
         {problemPage && (

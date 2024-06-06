@@ -41,5 +41,19 @@ namespace judge.system.core.Controllers
             var res = await _accountService.Update(req, userName);
             return Ok(res);
         }
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult> ForgotPassword(string email)
+        {
+            var res = await _accountService.ForgotPassword(email);
+            return Ok(res);
+        }
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult> ResetPassword(ResetPasswordReq req)
+        {
+            var res = await _accountService.ResetPassword(req);
+            return Ok(res);
+        }
     }
 }

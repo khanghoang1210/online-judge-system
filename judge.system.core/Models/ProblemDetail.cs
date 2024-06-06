@@ -20,6 +20,7 @@ namespace judge.system.core.Models
         public List<TestCase> TestCases { get; set; }
         public string Hint { get; set; }
         public string Description { get; set; }
+        public string ReturnType { get; set; }
     }
     public class TestCase
     {
