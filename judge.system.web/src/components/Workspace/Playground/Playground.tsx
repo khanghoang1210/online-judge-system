@@ -40,13 +40,13 @@ const Playground: React.FC<PlaygroundProps> = ({
   const [problemDetail, setProblem] = useState<ProblemDetail | null>(null);
 
   const [user, setUser] = useState<any>();
-  const [cookie] = useCookies(["token"]);
   const router = useRouter();
+  const [cookie] = useCookies(["token"]);
   useEffect(() => {
     if (cookie.token) {
       setUser(jwtDecode(cookie.token));
     }
-  }, []);
+  }, [cookie.token]);
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
 
   const [settings, setSettings] = useState<ISettings>({
@@ -121,7 +121,7 @@ const Playground: React.FC<PlaygroundProps> = ({
     }
   }, [selectedLanguage, problemDetail]);
   const API_URL = "http://localhost:5107/api/Judge/Submit";
-  
+  const CREATE_API_URL = "http://localhost:5107/api/Submissions";
 
   const onChange = (value: string) => {
     setUserCode(value);
@@ -156,6 +156,8 @@ const Playground: React.FC<PlaygroundProps> = ({
     }
     try{
       const data = {problemId: problem.problemId, sourceCode: userCode, language: selectedLanguage}
+      let isPass = false;
+      var  casesPass = 1;
       const res = await fetch(API_URL, {
           method: "POST",
           body: JSON.stringify(data),
@@ -171,12 +173,40 @@ const Playground: React.FC<PlaygroundProps> = ({
       const result = await res.json();
  
       if(result.statusCode == 200) {
+          console.log(cookie.token);
           setRes(result.data.output)
           toast.success("All test cases passed",{ position: "top-center", autoClose: 3000, theme: "dark" })
+          const createData = {problemId:problem.problemId,language: selectedLanguage, isAccepted: true, numCasesPassed: problemDetail?.testCases.length }
+          await fetch(CREATE_API_URL,{
+            method: "POST",
+            body: JSON.stringify(createData),
+            mode: "cors",
+            headers: {
+                'Authorization': `Bearer ${cookie.token}`,
+                'Content-Type': 'application/json;charset=UTF-8',
+                'Accept': 'application/json, text/plain',
+            },
+          })
       
       }else if(result.statusCode == 204){
           setRes(result.data.output)
           toast.warn("One ore more test cases failed",{ position: "top-center", autoClose: 3000, theme: "dark" })
+          const createData = {
+            problemId:problem.problemId,
+            language: selectedLanguage, 
+            isAccepted: false, 
+            numCasesPassed: (Number(problemDetail?.testCases.length))-1 
+          }
+          await fetch(CREATE_API_URL,{
+            method: "POST",
+            body: JSON.stringify(createData),
+            mode: "cors",
+            headers: {
+                'Authorization': `Bearer ${cookie.token}`,
+                'Accept': 'application/json, text/plain',
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+          })
       }
       else if(result.statusCode == 400){
         setRes(result.data.output)
@@ -186,6 +216,9 @@ const Playground: React.FC<PlaygroundProps> = ({
         toast.error("Internal Error",{ position: "top-center", autoClose: 3000, theme: "dark" })
       }
       
+      
+     
+
     }
     catch(error:any){
       toast.error(error.message, {
@@ -229,11 +262,11 @@ const Playground: React.FC<PlaygroundProps> = ({
           </div>
 
           <div className="flex">
-            {/* {problem.examples.map((example, index) => (
+            {problemDetail?.testCases.map((example, index) => (
               <div
-                className="mr-2 items-start mt-2 "
-                key={example.id}
-                onClick={() => setActiveTestCaseId(index)}
+                className={"mr-2 items-start mt-2 "}
+                key={String(example.item1)}
+                onClick={() => {if(index==0) setActiveTestCaseId(index)}}
               >
                 <div className="flex flex-wrap items-center gap-y-4">
                   <div
@@ -245,7 +278,7 @@ const Playground: React.FC<PlaygroundProps> = ({
                   </div>
                 </div>
               </div>
-            ))} */}
+            ))}
           </div>
 
           <div className="font-semibold my-4">

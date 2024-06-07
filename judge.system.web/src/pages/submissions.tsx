@@ -45,9 +45,10 @@ const Submissions: React.FC<SubmissionsProps> = ({ userName }) => {
             method: "GET",
             mode: "cors",
             headers: {
-              Accept: "application/json, text/plain",
-              "Content-Type": "application/json;charset=UTF-8",
-            },
+              'Authorization': `Bearer ${cookie.token}`,
+              'Accept': 'application/json, text/plain',
+              'Content-Type': 'application/json;charset=UTF-8',
+          },
           }
         );
         const data = await response.json(); 

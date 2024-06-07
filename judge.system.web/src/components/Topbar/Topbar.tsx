@@ -25,8 +25,6 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
     }
   },[])
 
-  
-console.log(user)
 
   // const handleProblemChange = (isForward: boolean) => {
   // 	const { order } = problems[router.query.pid as string] as Problem;

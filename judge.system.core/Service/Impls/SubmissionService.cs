@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using judge.system.core.Database;
+using judge.system.core.DTOs.Requests.Account;
 using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Submission;
+using judge.system.core.Models;
 using judge.system.core.Service.Interface;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -21,14 +22,14 @@ namespace judge.system.core.Service.Impls
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
-            
+
             //var currentUser = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
         private int? GetCurrentUserId()
         {
             var userIdString = _httpContextAccessor.HttpContext?.User.FindFirstValue("Id");
-            
+
             if (int.TryParse(userIdString, out var userId))
             {
                 return userId;
@@ -72,7 +73,7 @@ namespace judge.system.core.Service.Impls
         public async Task<APIResponse<List<GetSubmissionRes>>> GetAllSubmission(string userName)
         {
             int size = 20;
-            
+
             var user = _context.Accounts.FirstOrDefault(a => a.UserName == userName);
 
             if (user.Id == null)
@@ -95,7 +96,7 @@ namespace judge.system.core.Service.Impls
 
             var res = submissions.Select(submission => new GetSubmissionRes
             {
-                ProblemTitle = submission.Problem.Title, 
+                ProblemTitle = submission.Problem.Title,
                 Time = submission.CreatedAt,
                 IsAccepted = submission.IsAccepted,
                 NumCasesPassed = submission.NumCasesPassed,
@@ -110,6 +111,40 @@ namespace judge.system.core.Service.Impls
             };
         }
 
+        public async Task<APIResponse<bool>> CreateSubmission(CreateSubmissionReq req)
+        {
+            var currentUser = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            try
+            {
+                var item = new Submission
+                {
+                    ProblemId = req.ProblemId,
+                    Account = _context.Accounts.FirstOrDefault(x => x.UserName == currentUser),
+                    IsAccepted = req.IsAccepted,
+                    NumCasesPassed = req.NumCasesPassed,
+                    Language = req.Language,
+                    CreatedAt = DateTime.UtcNow,
+                };
+
+                _context.Submissions.Add(item);
+                await _context.SaveChangesAsync();
+                return new APIResponse<bool>
+                {
+                    StatusCode = 200,
+                    Message = "Success",
+                    Data = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse<bool>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = false,
+                };
+            }
+        }
 
     }
 }
