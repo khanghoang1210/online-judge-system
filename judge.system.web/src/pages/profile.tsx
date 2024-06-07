@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from '../styles/Profile.module.css';
 import Topbar from '@/components/Topbar/Topbar';
 import { Card, Image, Menu, MenuProps } from 'antd';
-import { AppstoreOutlined, UserOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, LockOutlined, ProfileOutlined, UnorderedListOutlined, UserOutlined } from '@ant-design/icons';
 import { oneDarkTheme } from '@uiw/react-codemirror';
 import SubmitionTable from '@/components/SubmissionTable';
 
@@ -10,12 +10,10 @@ import SubmitionTable from '@/components/SubmissionTable';
 
 type MenuItem = Required<MenuProps>['items'][number];
 const items: MenuItem[] = [
-    { key: '1', icon: <UserOutlined />, label: 'Basic Info' },
-    { key: '2', icon: <></>, label: 'Account' },
-    { key: '3', icon:<></>, label: 'Submission' },
-    { key: '4', icon: <></>, label: 'Privacy' },
-    { key: '5', icon: <></>, label: 'Account' },
-    { key: '6', icon:<></>, label: 'Lab' },
+    { key: '1', icon: <ProfileOutlined/>, label: 'Basic Info' },
+    { key: '2', icon: <UserOutlined/>, label: 'Account' },
+    { key: '3', icon:<UnorderedListOutlined/>, label: 'Submission' },
+    { key: '4', icon: <LockOutlined/>, label: 'Privacy' }
     // {
     //   key: 'sub1',
     //   label: 'Navigation One',
@@ -78,6 +76,7 @@ const ProfilePoints: React.FC = () => {
       defaultSelectedKeys={['1']}
       defaultOpenKeys={['sub1']}
       mode="inline"
+
       items={items}
     />
   </>
