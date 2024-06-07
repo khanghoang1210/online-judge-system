@@ -1,60 +1,29 @@
-.profileContainer {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-.profileHeader {
-    text-align: center;
-    margin-bottom: 20px;
+.profile-points {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 20px;
 }
-  
-.profilePicture {
-    border-radius: 50%;
-    width: 150px;
-    height: 150px;
+
+.points-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
 }
-  
-.username {
-    font-size: 2rem;
-    margin: 10px 0;
+
+.points-item {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  width: 150px;
+  background-color: #f9f9f9;
 }
-  
-.bio {
-    font-size: 1rem;
-    color: #cccccc;
+
+.points-item h2 {
+  font-size: 1.2em;
+  color: #333;
 }
-  
-.profileStats {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-}
-  
-.stat {
-    background-color: #1e1e1e;
-    padding: 10px;
-    border-radius: 8px;
-    text-align: center;
-    width: 30%;
-}
-  
-.stat h2 {
-    margin-bottom: 5px;
-    font-size: 1.2rem;
-}
-  
-.stat p {
-    font-size: 1rem;
-}
-  
-.profileContent {
-    background-color: #1e1e1e;
-    padding: 20px;
-    border-radius: 8px;
-}
-  
-.profileContent h2 {
-    margin-bottom: 10px;
-    font-size: 1.5rem;
+
+.points-item p {
+  font-size: 1.5em;
+  color: #666;
 }
