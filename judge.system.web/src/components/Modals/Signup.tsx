@@ -49,7 +49,7 @@ const Signup:React.FC<SignupProps> = () => {
     };
     console.log(inputs)
     return <form className='space-y-4 px-6 pb-4' onSubmit={handleRegister}>
-    <h3 className='text-xl font-medium text-white'>Register to LeetClone</h3>
+    <h3 className='text-xl font-medium text-white'>Register to CodeFast</h3>
     <div>
         <label htmlFor='email' className='text-sm font-medium block mb-2 text-gray-300'>
             Email

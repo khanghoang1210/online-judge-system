@@ -79,12 +79,22 @@ namespace judge.system.core.Service.Impls
             try
             {
                 var problemDetail = await _context.ProblemDetails.FirstOrDefaultAsync(x => x.ProblemId == problemId);
+                if (problemDetail == null)
+                {
+                    return new APIResponse<GetProblemDetailRes>
+                    {
+                        StatusCode = 404,
+                        Message = "Problem was not found",
+
+                    };
+                }
                 var item = new GetProblemDetailRes
                 {
                     Title = problemDetail.Title,
                     Description = problemDetail.Description,
                     TestCases = await _judgeService.GetInOut(problemId),
                     FunctionName = Converter.ToPascalCase(problemDetail.Title),
+                    ReturnType = problemDetail.ReturnType,
                 };
 
                 return new APIResponse<GetProblemDetailRes>

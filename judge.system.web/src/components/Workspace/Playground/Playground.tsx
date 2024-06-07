@@ -85,20 +85,39 @@ const Playground: React.FC<PlaygroundProps> = ({
     fetchProblemDetails();
   }, [problem.problemId]);
   let initialCode;
+
   useEffect(() => {
     if (problemDetail) {
-      switch (selectedLanguage) {
-        case "Python":
-          initialCode = `def ${problemDetail.functionName}():`;
-          break;
-        case "Java":
-          initialCode = `public static int ${problemDetail.functionName}() {}`;
-          break;
-        case "C++":
-        default:
-          initialCode = `int ${problemDetail.functionName}() {}`;
+      if(problemDetail.returnType == 'int'){
+        switch (selectedLanguage) {
+          case "Python":
+            initialCode = `def ${problemDetail.functionName}():`;
+            break;
+          case "Java":
+            initialCode = `public static int ${problemDetail.functionName}() {}`;
+            break;
+          case "C++":
+          default:
+            initialCode = `int ${problemDetail.functionName}() {}`;
+        }
+        setUserCode(initialCode);
       }
-      setUserCode(initialCode);
+      else if(problemDetail.returnType == 'string'){
+        switch (selectedLanguage) {
+          case "Python":
+            initialCode = `def ${problemDetail.functionName}():`;
+            break;
+          case "Java":
+            initialCode = `public static String ${problemDetail.functionName}() {}`;
+            break;
+          case "C++":
+          default:
+            initialCode = `string ${problemDetail.functionName}() {}`;
+        }
+        setUserCode(initialCode);
+      }
+      
+      
     }
   }, [selectedLanguage, problemDetail]);
   const API_URL = "http://localhost:5107/api/Judge/Submit";
