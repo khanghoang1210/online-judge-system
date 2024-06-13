@@ -22,9 +22,9 @@ namespace judge.system.core.Controllers
         }
 
         [HttpGet("{postId}")]
-        public async Task<IActionResult> GetById(int Id)
+        public async Task<IActionResult> GetById(int postId)
         {
-            var res = await _postService.GetById(Id);
+            var res = await _postService.GetById(postId);
             return Ok(res);
         }
     }

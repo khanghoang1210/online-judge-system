@@ -19,16 +19,16 @@ namespace judge.system.core.Service.Impls
             _mapper = mapper;
         }
 
-        public async Task<APIResponse<GetPostRes>> GetById(int Id)
+        public async Task<APIResponse<GetPostRes>> GetById(int postId)
         {
-            var post = await _context.Posts.FindAsync(Id);
+            var post = await _context.Posts.FindAsync(postId);
 
             if (post == null)
             {
                 return new APIResponse<GetPostRes>
                 {
                     StatusCode = 404,
-                    Message = "Problem not found",
+                    Message = "Post not found",
                 };
             }
 
@@ -45,7 +45,7 @@ namespace judge.system.core.Service.Impls
         public async Task<APIResponse<List<GetPostRes>>> GetAll()
         {
             var posts = await _context.Posts.ToListAsync();
-            var res = posts.Select(posts => _mapper.Map<GetPostRes>(posts)).ToList();
+            var res = posts.Select(_mapper.Map<GetPostRes>).ToList();
 
             return new APIResponse<List<GetPostRes>>
             {

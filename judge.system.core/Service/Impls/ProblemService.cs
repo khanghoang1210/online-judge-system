@@ -25,7 +25,7 @@ namespace judge.system.core.Service.Impls
         {
             var problems = await _context.Problems.ToListAsync();
             List<GetProblemRes> res = new List<GetProblemRes>();
-            var currentUser = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var currentUser = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
 
             foreach (var item in problems)
