@@ -25,7 +25,6 @@ namespace judge.system.core.Service.Impls
             //var currentUser = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-
         public async Task<APIResponse<List<string>>> GetLanguageList(string userName)
         {
             var currentUser = _context.Accounts.FirstOrDefault(a => a.UserName == userName).Id;
