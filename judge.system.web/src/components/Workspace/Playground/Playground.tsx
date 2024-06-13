@@ -16,7 +16,6 @@ import { cpp } from "@codemirror/lang-cpp";
 import { ProblemDetail } from "../ProblemDescription/ProblemDescription";
 import { useCookies } from "react-cookie";
 import { jwtDecode } from "jwt-decode";
-import { Source_Code_Pro } from "next/font/google";
 
 type PlaygroundProps = {
   problem: Problem;

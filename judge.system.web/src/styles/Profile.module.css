@@ -1,0 +1,29 @@
+.profile-points {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 20px;
+}
+
+.points-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.points-item {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  width: 150px;
+  background-color: #f9f9f9;
+}
+
+.points-item h2 {
+  font-size: 1.2em;
+  color: #333;
+}
+
+.points-item p {
+  font-size: 1.5em;
+  color: #666;
+}

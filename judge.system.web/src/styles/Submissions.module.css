@@ -10,25 +10,48 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  margin: 0 15px;
+  /* margin: 0 15px; */
   color:#000000A6;
   font: 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  text-align: left;
 }
+
 .table th,
+
 .table td {
   border: 1px solid #ddd;
   padding: 8px;
+}
+
+.table th.timeSubmitted {
+  width: 20%;
+}
+
+.table th.tableTitle {
+  width: 25%;
+}
+
+.table th.status {
+  width: 15%;
+}
+
+.table th.numCasesPassed {
+  width: 10%;
+}
+
+.table th.language {
+  width: 10%;
 }
 
 .table th {
   background-color: #f2f2f2;
 }
 
-.evenRow {
+.evenRow, .oddRow{
   background-color: #f9f9f9;
 }
 
-.oddRow:hover {
+.evenRow,.oddRow:hover {
   background-color: #ddd;
 }
 
@@ -47,7 +70,7 @@
   font-weight: bold;
 }
 
-.question {
+.problemTitle {
   color: #1890ff;
   text-decoration: none;
 }

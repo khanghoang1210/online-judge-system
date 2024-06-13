@@ -1,6 +1,5 @@
 ﻿using judge.system.core.DTOs.Requests.Account;
 using judge.system.core.Service.Interface;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -19,7 +18,7 @@ namespace judge.system.core.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        ///[Authorize]
         public async Task<IActionResult> GetAllSubmission(string userName)
         {
             var response = await _submissionService.GetAllSubmission(userName);
