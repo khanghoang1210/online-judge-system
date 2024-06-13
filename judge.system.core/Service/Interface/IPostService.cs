@@ -6,6 +6,6 @@ namespace judge.system.core.Service.Interface
     public interface IPostService
     {
         Task<APIResponse<List<GetPostRes>>> GetAll();
-        Task<APIResponse<List<GetPostRes>>> GetById(int Id);
+        Task<APIResponse<GetPostRes>> GetById(int Id);
     }
 }

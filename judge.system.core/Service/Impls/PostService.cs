@@ -2,7 +2,6 @@
 using judge.system.core.Database;
 using judge.system.core.DTOs.Responses;
 using judge.system.core.DTOs.Responses.Post;
-using judge.system.core.DTOs.Responses.Problem;
 using judge.system.core.Service.Interface;
 using Microsoft.EntityFrameworkCore;
 
