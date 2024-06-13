@@ -25,8 +25,6 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
     }
   },[])
 
-  
-console.log(user)
 
   // const handleProblemChange = (isForward: boolean) => {
   // 	const { order } = problems[router.query.pid as string] as Problem;
@@ -93,16 +91,16 @@ console.log(user)
             Problems
           </Link>
           <Link
-            href="/contest"
-            className="text-dark-gray-8 hover:text-brand-orange"
-          >
-            Contest
-          </Link>
-          <Link
             href="/submissions"
             className="text-dark-gray-8 hover:text-brand-orange"
           >
             Submissions
+          </Link>
+          <Link
+            href="/profile"
+            className="text-dark-gray-8 hover:text-brand-orange"
+          >
+            Profile
           </Link>
         </div>
         <div className="flex items-center space-x-4 flex-1 justify-end">
