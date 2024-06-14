@@ -8,7 +8,6 @@ namespace judge.system.core.Service.Interface
     public interface ISubmissionService
     {
         Task<APIResponse<List<GetSubmissionRes>>> GetAllSubmission(string userName);
-        Task<APIResponse<List<string>>> GetLanguageList();
         Task<APIResponse<bool>> CreateSubmission(CreateSubmissionReq req);
     }
 }

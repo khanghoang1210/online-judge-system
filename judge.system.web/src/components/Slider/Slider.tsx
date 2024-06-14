@@ -1,67 +1,54 @@
-import React from 'react';
-import Slider from 'react-slick';
-import Image from 'next/image';
-import Link from 'next/link';
-import "slick-carousel/slick/slick.css"; 
+import React, { useEffect, useState } from "react";
+import Slider from "react-slick";
+import Image from "next/image";
+import Link from "next/link";
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { SampleNextArrow, SamplePrevArrow } from './Arrow';
+import { SampleNextArrow, SamplePrevArrow } from "./Arrow";
 
-const sliderItems = [
-  {
-    title: "Data Structures and Algorithms",
-    chapters: 13,
-    items: 149,
-    progress: 0,
-    imgSrc: "/img-problem1.png",
-  
-  },
-  {
-    title: "System Design for Interviews and Beyond",
-    chapters: 16,
-    items: 81,
-    progress: 0,
-    imgSrc: "/img-problem2.png",
+const API_URL = "http://localhost:5107/api/Posts/";
 
-  },
-  {
-    title: "The LeetCode Beginner's Guide",
-    chapters: 4,
-    items: 17,
-    progress: 0,
-    imgSrc: "/img-problem3.png",
+export type Post = {
+  id: number;
+  title: string;
+  introduction: string;
+  content: string;
+  image: string;
+};
 
-  },
-  {
-    title: "Top Interview Questions",
-    chapters: 9,
-    items: 48,
-    progress: 0,
-    imgSrc: "/img-problem4.png",
-
-  },{
-    title: "The LeetCode Beginner's Guide",
-    chapters: 4,
-    items: 17,
-    progress: 0,
-    imgSrc: "/img-problem5.png",
-
-  },
-  {
-    title: "Top Interview Questions",
-    chapters: 9,
-    items: 48,
-    progress: 0,
-    imgSrc: "/img-problem6.png",
-
-  },
-  // Add more items as needed
-];
 
 interface CustomSliderProps {
   title: string;
 }
 
 const CustomSlider: React.FC<CustomSliderProps> = ({ title }) => {
+  const [postList, setPostList] = useState<Post[]>([]);
+  useEffect(() => {
+    fetch(API_URL, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        Accept: "application/json, text/plain",
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data && data.data && Array.isArray(data.data)) {
+          setPostList(data.data);
+
+          // Update problemMap directly with the fetched data
+        } else {
+          throw new Error("Invalid data format in the response");
+        }
+      })
+      .catch((err) => console.error("Error fetching problems:", err));
+  }, []);
   const settings = {
     dots: true,
     infinite: true,
@@ -89,41 +76,66 @@ const CustomSlider: React.FC<CustomSliderProps> = ({ title }) => {
       },
     ],
   };
-
   return (
     <>
-      <div className='slider-container px-4 py-8'>
-        <h2 className='text-3xl font-bold mb-4 text-white'>{title}</h2>
-        <Slider {...settings}>
-          {sliderItems.map((item, index) => (
-            <div key={index} className='px-2' >
-              <Link href={`postDetail?id=${index}`}   >
-                <div className='text-3xl bg-white rounded-lg shadow-lg overflow-hidden m-0.5' style={{ height: "100%",position:"relative" }}>
-                  <div style={{ position: "relative", height: "150px" }}>
+      <div className="slider-container px-2 py-2">
+        <h2 className="text-3xl font-bold mb-4 text-white">{title}</h2>
+  
+        <div className="flex flex-wrap -mx-2"> {/* Adjusted container for horizontal wrapping */}
+          {postList.map((item, index) => (
+            <div key={index} className="w-full sm:w-1/3 px-5 mb-5"> {/* Set width to one-third and added margins */}
+              <Link href={`/posts/${item.id}`}>
+                <div
+                  className="text-3xl bg-white rounded-lg shadow-lg overflow-hidden m-0.5"
+                  style={{
+                    height: "200px",
+                    position: "relative",
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "relative",
+                      height: "100%",
+                      width: "100%",
+                    }}
+                  >
                     <Image
-                      src={item.imgSrc}
+                      src={item.image}
                       alt={item.title}
-                      layout='fill'
-                      objectFit='cover'
-                      objectPosition='center'
+                      layout="fill"
+                      objectFit="cover"
+                      objectPosition="center"
                     />
                   </div>
-                  <div className='p-4 text-black' >
-                    <h3 className='text-2xl text-white font-bold mb-2'  style={{position:"absolute",top:"24px",left:"20px",right:"20px"}}>{item.title}</h3>
-                    <div className='flex justify-between text-sm'>
-                      <span>{item.chapters} Chapters</span>
-                      <span>{item.items} Items</span>
-                      <span>{item.progress}%</span>
+                  <div className="p-4 text-black">
+                    <h3
+                      className="text-2xl text-white font-bold mb-2"
+                      style={{
+                        position: "absolute",
+                        top: "24px",
+                        left: "20px",
+                        right: "20px",
+                      }}
+                    >
+                      {item.title}
+                    </h3>
+                    <div className="flex justify-between text-sm">
+                      <span>Chapters</span>
+                      <span>Items</span>
+                      <span>%</span>
                     </div>
                   </div>
                 </div>
               </Link>
             </div>
           ))}
-        </Slider>
+        </div>
       </div>
     </>
   );
+  
+  
+  
 };
 
 export default CustomSlider;

@@ -14,8 +14,8 @@ export default function Home() {
     <main className='bg-dark-layer-2 min-h-screen'>
       <Topbar/>
 			<Slider title='Featured'/>
-      <Slider title='Interview'/>
-      <Slider title='Learn'/>
+      {/* <Slider title='Interview'/>
+      <Slider title='Learn'/> */}
     </main>
     </>
   )
