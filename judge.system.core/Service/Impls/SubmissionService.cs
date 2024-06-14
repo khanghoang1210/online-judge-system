@@ -26,49 +26,45 @@ namespace judge.system.core.Service.Impls
             //var currentUser = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        private int? GetCurrentUserId()
-        {
-            var userIdString = _httpContextAccessor.HttpContext?.User.FindFirstValue("Id");
+        //public async Task<APIResponse<List<string>>> GetLanguageList(string userName)
+        //{
+        //    var userIdString = _httpContextAccessor.HttpContext?.User.FindFirstValue("Id");
 
-            if (int.TryParse(userIdString, out var userId))
-            {
-                return userId;
-            }
-            return null;
-        }
+        //    if (int.TryParse(userIdString, out var userId))
+        //    {
+        //        return userId;
+        //    }
+        //    return null;
+        //}
 
-        public async Task<APIResponse<List<string>>> GetLanguageList()
-        {
-            var currentUser = GetCurrentUserId();
+        //    if (currentUser == null)
+        //    {
+        //        return new APIResponse<List<string>>
+        //        {
+        //            StatusCode = 401,
+        //            Message = "Unauthorized",
+        //            Data = null,
+        //        };
 
-            if (currentUser == null)
-            {
-                return new APIResponse<List<string>>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized",
-                    Data = null,
-                };
+        //    }
 
-            }
+        //    var languages = await _context.Submissions
+        //        .Where(s => s.UserId == currentUser && s.IsAccepted)
+        //        .Select(s => s.Language)
+        //        .Distinct()
+        //        .ToListAsync();
 
-            var languages = await _context.Submissions
-                .Where(s => s.UserId == currentUser && s.IsAccepted)
-                .Select(s => s.Language)
-                .Distinct()
-                .ToListAsync();
+        //    //var LanguageList = languages.Select(
+        //    //    lang => new GetLanguageSubmittedRes { Language = lang }
+        //    //    ).ToList();
 
-            //var LanguageList = languages.Select(
-            //    lang => new GetLanguageSubmittedRes { Language = lang }
-            //    ).ToList();
-
-            return new APIResponse<List<string>>
-            {
-                StatusCode = 200,
-                Message = "Success",
-                Data = languages
-            };
-        }
+        //    return new APIResponse<List<string>>
+        //    {
+        //        StatusCode = 200,
+        //        Message = "Success",
+        //        Data = languages
+        //    };
+        //}
 
         public async Task<APIResponse<List<GetSubmissionRes>>> GetAllSubmission(string userName)
         {
@@ -76,7 +72,7 @@ namespace judge.system.core.Service.Impls
 
             var user = _context.Accounts.FirstOrDefault(a => a.UserName == userName);
 
-            if (user.Id == null)
+            if (user == null)
             {
                 return new APIResponse<List<GetSubmissionRes>>
                 {

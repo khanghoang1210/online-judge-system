@@ -15,6 +15,7 @@ namespace judge.system.core.Database
         public DbSet<Tag> Tags { get; set; }
         public DbSet<ProblemDetail> ProblemDetails { get; set; }
         public DbSet<ProblemTag> ProblemTags { get; set; }
+        public DbSet<Post> Posts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
